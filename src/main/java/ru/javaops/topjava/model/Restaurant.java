@@ -22,7 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 //@JsonIgnoreProperties(value = "menuItems", allowGetters = true)
-public class Restaurant extends NamedEntity implements HasId, Serializable {
+public class Restaurant extends NamedEntity implements HasId {
 
     public Restaurant(Integer id) {
         super(id, null);
