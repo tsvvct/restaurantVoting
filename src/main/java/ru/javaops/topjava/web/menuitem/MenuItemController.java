@@ -8,11 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javaops.topjava.model.MenuItem;
 import ru.javaops.topjava.repository.MenuItemRepository;
 import ru.javaops.topjava.service.MenuItemService;
+import ru.javaops.topjava.web.validation.RestaurantNotNullValidator;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -36,6 +38,14 @@ public class MenuItemController {
 
     @Autowired
     protected MenuItemService service;
+
+    @Autowired
+    private RestaurantNotNullValidator restValidator;
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(restValidator);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<MenuItem> get(@PathVariable int id) {

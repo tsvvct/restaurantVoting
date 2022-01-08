@@ -12,6 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
+import ru.javaops.topjava.HasIdAndRestaurant;
 import ru.javaops.topjava.util.ChildAsIdOnlySerializer;
 
 import javax.persistence.*;
@@ -24,7 +25,7 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MenuItem extends NamedEntity {
+public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
