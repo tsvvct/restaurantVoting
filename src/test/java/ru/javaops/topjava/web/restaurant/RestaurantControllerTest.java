@@ -19,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javaops.topjava.web.restaurant.RestaurantTestData.*;
 import static ru.javaops.topjava.web.user.UserTestData.ADMIN_MAIL;
+import static ru.javaops.topjava.web.user.UserTestData.USER_MAIL;
 
 class RestaurantControllerTest extends AbstractControllerTest {
 
@@ -39,7 +40,7 @@ class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void getForbidden() throws Exception {
+    void getUnauthorized() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + RESTAURANT1_ID))
                 .andExpect(status().isUnauthorized());
     }
@@ -122,6 +123,16 @@ class RestaurantControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = USER_MAIL)
+    void createForbidden() throws Exception {
+        Restaurant newRestaurant = getNew();
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newRestaurant)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         Restaurant updated = getUpdated();
@@ -131,5 +142,15 @@ class RestaurantControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         RESTAURANT_MATCHER.assertMatch(restaurantRepository.getById(RESTAURANT1_ID), updated);
+    }
+
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void updateForbidden() throws Exception {
+        Restaurant updated = getUpdated();
+        perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated)))
+                .andExpect(status().isForbidden());
     }
 }

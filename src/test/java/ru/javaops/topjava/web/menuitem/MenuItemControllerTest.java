@@ -54,6 +54,13 @@ class MenuItemControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = USER_MAIL)
+    void deleteForbidden() throws Exception {
+        perform(MockMvcRequestBuilders.delete(REST_URL + MENU_ITEM1_ID))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void getAllForRestaurant() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL)
@@ -96,6 +103,16 @@ class MenuItemControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithUserDetails(value = USER_MAIL)
+    void createForbidden() throws Exception {
+        MenuItem newItem = getNew();
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newItem)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         MenuItem updated = getUpdated();
@@ -105,5 +122,15 @@ class MenuItemControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         MENU_ITEM_MATCHER.assertMatch(menuItemRepository.getById(MENU_ITEM1_ID), updated);
+    }
+
+    @Test
+    @WithUserDetails(value = USER_MAIL)
+    void updateForbidden() throws Exception {
+        MenuItem updated = getUpdated();
+        perform(MockMvcRequestBuilders.put(REST_URL + MENU_ITEM1_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated)))
+                .andExpect(status().isForbidden());
     }
 }
