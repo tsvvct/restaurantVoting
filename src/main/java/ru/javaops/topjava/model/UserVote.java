@@ -1,10 +1,13 @@
 package ru.javaops.topjava.model;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.javaops.topjava.HasIdAndRestaurant;
+import ru.javaops.topjava.util.ChildAsIdOnlySerializer;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -17,19 +20,21 @@ import java.time.LocalDate;
 @JsonPropertyOrder({"id", "user", "restaurant", ""})
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserVote extends BaseEntity {
+public class UserVote extends BaseEntity implements HasIdAndRestaurant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonSerialize(using = ChildAsIdOnlySerializer.class)
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
+    @JsonSerialize(using = ChildAsIdOnlySerializer.class)
     Restaurant restaurant;
 
     @Column(name = "vote_date")
