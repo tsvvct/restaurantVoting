@@ -35,7 +35,6 @@ public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
     @JsonSerialize(using = ChildAsIdOnlySerializer.class)
     Restaurant restaurant;
 
-    // TODO: 06.01.2022 validation
     @NotNull
     @Range(min = 1)
     Integer price;

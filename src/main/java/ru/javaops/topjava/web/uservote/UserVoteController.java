@@ -104,7 +104,6 @@ public class UserVoteController {
     public void update(@AuthenticationPrincipal AuthUser authUser,
                        @Valid @RequestBody UserVote vote, @PathVariable int id) {
         int userId = authUser.id();
-        // TODO: 06.01.2022 check entity exist in DB
         log.info("update vote {} for user {}", vote, userId);
         ValidationUtil.checkVotingIsOver();
         assureIdConsistent(vote, id);

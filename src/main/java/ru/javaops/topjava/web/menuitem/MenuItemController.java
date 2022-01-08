@@ -2,6 +2,7 @@ package ru.javaops.topjava.web.menuitem;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,6 @@ import static ru.javaops.topjava.util.validation.ValidationUtil.checkNew;
 @RestController
 @RequestMapping(value = MenuItemController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-// TODO: cache only most requested data!
-//@CacheConfig(cacheNames = "users")
 public class MenuItemController {
 
     static final String REST_URL = "/api/admin/menuitems";
@@ -69,7 +68,7 @@ public class MenuItemController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @CacheEvict(value = "restaurants", key = "#menuItem?.restaurant.id")
+    @CacheEvict(value = "restaurants", allEntries = true)
     public ResponseEntity<MenuItem> createWithLocation(@Valid @RequestBody MenuItem menuItem) {
         log.info("create {}", menuItem);
         checkNew(menuItem);
@@ -82,7 +81,7 @@ public class MenuItemController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(value = "restaurants", key = "#menuItem?.restaurant.id")
+    @CacheEvict(value = "restaurants", allEntries = true)
     public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int id) {
         log.info("update {} with id={}", menuItem, id);
         assureIdConsistent(menuItem, id);

@@ -31,7 +31,6 @@ import static ru.javaops.topjava.util.validation.ValidationUtil.checkNew;
 @RestController
 @RequestMapping(value = RestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-// TODO: cache only most requested data!
 @CacheConfig(cacheNames = "restaurants")
 public class RestaurantController {
 
@@ -41,12 +40,12 @@ public class RestaurantController {
     protected RestaurantRepository repository;
 
     @GetMapping("/{id}")
+    @Cacheable
     public ResponseEntity<Restaurant> get(@PathVariable int id) {
         return ResponseEntity.of(repository.findById(id));
     }
 
     @GetMapping("/{id}/with-menu")
-    @Cacheable
     public ResponseEntity<Restaurant> getWithMenuItems(@PathVariable int id) {
         return ResponseEntity.of(repository.findByIdWithMenu(id));
     }
@@ -62,14 +61,14 @@ public class RestaurantController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(key = "#id")
+    @CacheEvict(allEntries = true)
     public void delete(@PathVariable int id) {
         log.info("delete {}", id);
         repository.deleteExisted(id);
     }
 
     @GetMapping
-//    @Cacheable
+    @Cacheable
     public List<Restaurant> getAll() {
         log.info("getAll");
         return repository.findAll();
@@ -84,9 +83,9 @@ public class RestaurantController {
 
     @GetMapping("/with-menu/for-date")
     @Cacheable
-    public List<Restaurant> getAllWithMenuForDate(@RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
+    public List<Restaurant> getAllWithMenuForDate(
+            @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
         log.info("getAllWithMenuForDate");
-
         return repository.findAllWithMenuForDate(Objects.requireNonNullElse(menuDate, LocalDate.now()));
     }
 
@@ -105,13 +104,12 @@ public class RestaurantController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(key = "#id")
+    @CacheEvict(allEntries = true)
     @Transactional
     public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
         log.info("update restaurant {} with id={}", restaurantTo, id);
         Restaurant restaurant = RestaurantUtil.createNewFromTo(restaurantTo);
         assureIdConsistent(restaurant, id);
-        // TODO: 06.01.2022 check entity exist in DB
         repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Restaurant with id=" + id + " not found"));
         repository.save(restaurant);
