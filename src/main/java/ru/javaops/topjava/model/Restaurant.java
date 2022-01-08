@@ -12,7 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -21,7 +20,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@JsonIgnoreProperties(value = "menuItems", allowGetters = true)
 public class Restaurant extends NamedEntity implements HasId {
 
     public Restaurant(Integer id) {
@@ -34,7 +32,6 @@ public class Restaurant extends NamedEntity implements HasId {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
-//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public List<MenuItem> menuItems;
 
     @Override
