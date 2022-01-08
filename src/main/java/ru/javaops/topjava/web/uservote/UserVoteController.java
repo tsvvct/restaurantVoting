@@ -72,7 +72,7 @@ public class UserVoteController {
         return ResponseEntity.of(userVote);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     public List<UserVote> getUserVotes(@AuthenticationPrincipal AuthUser authUser) {
         return repository.getUserVotes(authUser.id());
     }

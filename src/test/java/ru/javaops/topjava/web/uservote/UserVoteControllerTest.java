@@ -79,7 +79,7 @@ class UserVoteControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getUserVotes() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/all"))
+        perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andDo(print())
                 // https://jira.spring.io/browse/SPR-14472
