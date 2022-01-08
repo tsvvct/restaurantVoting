@@ -14,7 +14,8 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public interface UserVoteRepository extends BaseRepository<UserVote> {
 
-    @Query("SELECT uv FROM UserVote uv WHERE uv.id = :id and uv.user.id = :userId")
+    @EntityGraph(attributePaths = {"user"}, type = EntityGraph.EntityGraphType.LOAD)
+    @Query("FROM UserVote uv LEFT JOIN uv.user LEFT JOIN uv.restaurant WHERE uv.id = :id and uv.user.id = :userId")
     Optional<UserVote> get(int id, int userId);
 
     @EntityGraph(attributePaths = {"user"}, type = EntityGraph.EntityGraphType.LOAD)

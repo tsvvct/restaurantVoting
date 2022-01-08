@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.javaops.topjava.HasIdAndRestaurant;
 import ru.javaops.topjava.util.ChildAsIdOnlySerializer;
+import ru.javaops.topjava.util.JsonHelper;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -51,7 +52,12 @@ public class UserVote extends BaseEntity implements HasIdAndRestaurant {
     //https://stackoverflow.com/questions/18306040/jackson-deserialize-jsonidentityreference-alwaysasid-true
     @JsonProperty("restaurant")
     public void setRestaurantFromId(Integer id) {
-        this.restaurant = new Restaurant(id);
+        this.restaurant = JsonHelper.getRestaurantFromId(id);
+    }
+
+    @JsonProperty("user")
+    public void setUserFromId(Integer id) {
+        this.user = JsonHelper.getUserFromId(id);
     }
 
     @Override
