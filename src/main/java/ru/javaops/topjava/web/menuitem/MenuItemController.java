@@ -2,7 +2,6 @@ package ru.javaops.topjava.web.menuitem;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,7 @@ import static ru.javaops.topjava.util.validation.ValidationUtil.checkNew;
 @Slf4j
 public class MenuItemController {
 
-    static final String REST_URL = "/api/admin/menuitems";
+    static final String REST_URL = "/api/admin/menu-items";
 
     @Autowired
     protected MenuItemRepository repository;
@@ -48,7 +47,7 @@ public class MenuItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MenuItem> get(@PathVariable int id) {
-        log.info("get {}", id);
+        log.info("get menu item with id={}", id);
         return ResponseEntity.of(repository.findById(id));
     }
 
@@ -56,13 +55,14 @@ public class MenuItemController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(cacheNames = "restaurants", allEntries = true)
     public void delete(@PathVariable int id) {
+        log.info("delete menu item with id={}", id);
         repository.deleteExisted(id);
     }
 
     @GetMapping
     public List<MenuItem> getAllForRestaurant(@RequestParam @Nullable Integer restaurantId,
                                               @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
-        log.info("getAllForRestaurant");
+        log.info("get menu items for restaurant with id={} for date={}", restaurantId, menuDate);
         return repository.findAllByRestaurantId(restaurantId, menuDate);
     }
 
@@ -70,7 +70,7 @@ public class MenuItemController {
     @ResponseStatus(HttpStatus.CREATED)
     @CacheEvict(value = "restaurants", allEntries = true)
     public ResponseEntity<MenuItem> createWithLocation(@Valid @RequestBody MenuItem menuItem) {
-        log.info("create {}", menuItem);
+        log.info("create menu item {}", menuItem);
         checkNew(menuItem);
         MenuItem created = repository.save(menuItem);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -83,7 +83,7 @@ public class MenuItemController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @CacheEvict(value = "restaurants", allEntries = true)
     public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int id) {
-        log.info("update {} with id={}", menuItem, id);
+        log.info("update menu item {} with id={}", menuItem, id);
         assureIdConsistent(menuItem, id);
         service.save(menuItem, id);
     }

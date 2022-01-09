@@ -32,7 +32,7 @@ import static ru.javaops.topjava.util.validation.ValidationUtil.assureIdConsiste
 @Slf4j
 public class UserVoteController {
 
-    static final String REST_URL = "/api/profile/vote";
+    static final String REST_URL = "/api/profile/votes";
 
     @Autowired
     protected UserVoteRepository repository;
