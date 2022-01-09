@@ -23,7 +23,6 @@ public class AppConfig {
         return Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "9092");
     }
 
-    //    https://stackoverflow.com/a/46947975/548473
     @Bean
     Module module() {
         return new Hibernate5Module();

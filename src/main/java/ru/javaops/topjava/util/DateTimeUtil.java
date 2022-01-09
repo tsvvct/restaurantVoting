@@ -9,7 +9,6 @@ import java.time.temporal.ChronoUnit;
 @UtilityClass
 public class DateTimeUtil {
 
-    // DB doesn't support LocalDate.MIN/MAX
     private static final LocalDateTime MIN_DATE = LocalDateTime.of(1, 1, 1, 0, 0);
     private static final LocalDateTime MAX_DATE = LocalDateTime.of(3000, 1, 1, 0, 0);
 

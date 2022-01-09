@@ -32,7 +32,6 @@ class MenuItemControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + MENU_ITEM1_ID))
                 .andExpect(status().isOk())
                 .andDo(print())
-                // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_ITEM_MATCHER.contentJson(restaurant1_menuitem1));
     }
@@ -67,7 +66,6 @@ class MenuItemControllerTest extends AbstractControllerTest {
                 .param("restaurantId", "1"))
                 .andExpect(status().isOk())
                 .andDo(print())
-                // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_ITEM_MATCHER.contentJson(restaurant1_menuitem1, restaurant1_menuitem2,
                         restaurant1_menuitem3, restaurant1_menuitem4));
@@ -81,7 +79,6 @@ class MenuItemControllerTest extends AbstractControllerTest {
                 .param("menuDate", MenuItemTestData.testDate.toString()))
                 .andExpect(status().isOk())
                 .andDo(print())
-                // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MENU_ITEM_MATCHER.contentJson(restaurant1_menuitem3, restaurant1_menuitem4));
     }

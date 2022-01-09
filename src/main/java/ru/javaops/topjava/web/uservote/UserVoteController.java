@@ -43,7 +43,6 @@ public class UserVoteController {
     @Autowired
     private RestaurantHasMenuValidator restaurantValidator;
 
-    //https://www.sql.ru/forum/1247425/problemy-s-validaciey
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(restaurantValidator);

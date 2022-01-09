@@ -15,7 +15,7 @@ public class UserTo extends NamedTo implements HasIdAndEmail {
     @Email
     @NotBlank
     @Size(max = 128)
-    @NoHtml  // https://stackoverflow.com/questions/17480809
+    @NoHtml
     String email;
 
     @NotBlank

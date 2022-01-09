@@ -35,7 +35,6 @@ class UserVoteControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL + USER_VOTE1_ID))
                 .andExpect(status().isOk())
                 .andDo(print())
-                // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_VOTE_MATCHER.contentJson(userVote1));
     }
@@ -71,7 +70,6 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .param("voteDate", UserVoteTestData.testDate.minusDays(1).toString()))
                 .andExpect(status().isOk())
                 .andDo(print())
-                // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_VOTE_MATCHER.contentJson(userVote1));
     }
@@ -82,7 +80,6 @@ class UserVoteControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isOk())
                 .andDo(print())
-                // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_VOTE_MATCHER.contentJson(userVote1, userVote2));
     }
@@ -95,7 +92,6 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .param("voteDateTo", testDate.minusDays(1).toString()))
                 .andExpect(status().isOk())
                 .andDo(print())
-                // https://jira.spring.io/browse/SPR-14472
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_VOTE_MATCHER.contentJson(List.of(userVote1)));
     }

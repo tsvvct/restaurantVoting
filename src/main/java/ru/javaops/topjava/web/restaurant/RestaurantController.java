@@ -75,7 +75,6 @@ public class RestaurantController {
     }
 
     @GetMapping("/with-menu")
-//    @Cacheable
     public List<Restaurant> getAllWithMenu() {
         log.info("getAllWithMenu");
         return repository.findAllWithMenuItems();

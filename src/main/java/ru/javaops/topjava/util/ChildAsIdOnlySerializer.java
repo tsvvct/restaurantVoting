@@ -9,7 +9,6 @@ import java.io.IOException;
 
 public class ChildAsIdOnlySerializer extends StdSerializer<HasId> {
 
-    // must have empty constructor
     public ChildAsIdOnlySerializer() {
         this(null);
     }

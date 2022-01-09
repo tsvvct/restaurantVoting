@@ -49,7 +49,6 @@ public class UserVote extends BaseEntity implements HasIdAndRestaurant {
         this.voteDate = voteDate;
     }
 
-    //https://stackoverflow.com/questions/18306040/jackson-deserialize-jsonidentityreference-alwaysasid-true
     @JsonProperty("restaurant")
     public void setRestaurantFromId(Integer id) {
         this.restaurant = JsonHelper.getRestaurantFromId(id);

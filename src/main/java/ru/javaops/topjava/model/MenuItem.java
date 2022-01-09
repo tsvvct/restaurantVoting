@@ -54,7 +54,6 @@ public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
 
     }
 
-    //https://stackoverflow.com/questions/18306040/jackson-deserialize-jsonidentityreference-alwaysasid-true
     @JsonProperty("restaurant")
     public void setRestaurantFromId(Integer id) {
         this.restaurant = new Restaurant(id);
