@@ -65,21 +65,16 @@ public class UserVoteController {
     @GetMapping("/for-date")
     public ResponseEntity<UserVote> getForDate(@AuthenticationPrincipal AuthUser authUser,
                                                @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDate) {
-        log.info("get vote for {} for user {}", (voteDate == null) ? "today" : voteDate.toString(), authUser.id());
+        log.info("get vote for {} for user {}", Objects.requireNonNullElse(voteDate, LocalDate.now()), authUser.id());
         Optional<UserVote> userVote = repository.getVoteForUserAndVoteDate(authUser.id(),
                 Objects.requireNonNullElse(voteDate, LocalDate.now()));
         return ResponseEntity.of(userVote);
     }
 
     @GetMapping
-    public List<UserVote> getUserVotes(@AuthenticationPrincipal AuthUser authUser) {
-        return repository.getUserVotes(authUser.id());
-    }
-
-    @GetMapping("/filtered")
-    public List<UserVote> getFilteredUserVotes(@AuthenticationPrincipal AuthUser authUser,
-                                               @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateFrom,
-                                               @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateTo) {
+    public List<UserVote> getUserVotes(@AuthenticationPrincipal AuthUser authUser,
+                                       @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateFrom,
+                                       @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateTo) {
         return repository.getUserVotesFiltered(authUser.id(), voteDateFrom, voteDateTo);
     }
 

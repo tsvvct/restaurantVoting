@@ -87,7 +87,7 @@ class UserVoteControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = USER_MAIL)
     void getFilteredUserVotes() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + "/filtered")
+        perform(MockMvcRequestBuilders.get(REST_URL)
                 .param("voteDateFrom", testDate.minusDays(1).toString())
                 .param("voteDateTo", testDate.minusDays(1).toString()))
                 .andExpect(status().isOk())
