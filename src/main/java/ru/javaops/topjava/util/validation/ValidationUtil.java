@@ -5,6 +5,7 @@ import org.springframework.core.NestedExceptionUtils;
 import org.springframework.lang.NonNull;
 import ru.javaops.topjava.HasId;
 import ru.javaops.topjava.error.IllegalRequestDataException;
+import ru.javaops.topjava.util.DateTimeUtil;
 
 import java.time.LocalTime;
 
@@ -38,9 +39,8 @@ public class ValidationUtil {
     }
 
     public static void checkVotingIsOver() {
-        LocalTime endVotingTime = LocalTime.of(23,59);
-        if (LocalTime.now().isAfter(endVotingTime)) {
-            throw new IllegalRequestDataException("sorry voting is over for today");
+        if (DateTimeUtil.checkVotingIsOver()) {
+            throw new IllegalRequestDataException("Sorry voting is over for today, come back tomorrow.");
         }
     }
 }

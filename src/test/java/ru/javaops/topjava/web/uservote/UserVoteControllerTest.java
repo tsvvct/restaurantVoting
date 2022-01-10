@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javaops.topjava.model.UserVote;
 import ru.javaops.topjava.repository.UserVoteRepository;
+import ru.javaops.topjava.util.DateTimeUtil;
 import ru.javaops.topjava.util.JsonUtil;
 import ru.javaops.topjava.web.AbstractControllerTest;
 
@@ -133,5 +134,17 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .andExpect(status().isNoContent());
 
         USER_VOTE_MATCHER.assertMatch(userVoteRepository.getById(USER_VOTE1_ID + 1), updated);
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void createVotingIsOver() throws Exception {
+        DateTimeUtil.moveClock(2);
+        UserVote newVote = getNew();
+        perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newVote)))
+                .andExpect(status().is(422));
+
     }
 }
