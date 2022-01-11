@@ -8,7 +8,7 @@ import static ru.javaops.topjava.web.uservote.UserVoteTestData.testDate;
 
 @UtilityClass
 public class DateTimeUtil {
-    private static LocalTime endVotingTime = LocalTime.of(11,00);
+    private static LocalTime endVotingTime = LocalTime.of(11,0);
     private static Clock clock;
     static {
         setDefaultClock();
@@ -21,7 +21,7 @@ public class DateTimeUtil {
     }
 
     private static void setDefaultClock() {
-        clock = Clock.fixed(Instant.parse(testDate.toString() + "T10:59:59.00Z"), ZoneId.of("UTC"));
+        clock = Clock.fixed(Instant.parse(testDate + "T10:59:59.00Z"), ZoneId.of("UTC"));
     }
 
     public static void moveClock(int seconds) {

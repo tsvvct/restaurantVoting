@@ -11,8 +11,8 @@
     <groupId>ru.javaops</groupId>
     <artifactId>topjava</artifactId>
     <version>1.0</version>
-    <name>Calories Management</name>
-    <description>Migration TopJava to Spring Boot</description>
+    <name>Restaurant voting</name>
+    <description>TopJava graduation project</description>
     <url>https://javaops.ru/view/topjava</url>
 
     <properties>
@@ -120,6 +120,14 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>-Dfile.encoding=UTF-8</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>16</source>
+                    <target>16</target>
                 </configuration>
             </plugin>
         </plugins>

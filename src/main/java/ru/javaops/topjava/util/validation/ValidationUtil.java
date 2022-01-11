@@ -7,8 +7,6 @@ import ru.javaops.topjava.HasId;
 import ru.javaops.topjava.error.IllegalRequestDataException;
 import ru.javaops.topjava.util.DateTimeUtil;
 
-import java.time.LocalTime;
-
 @UtilityClass
 public class ValidationUtil {
 
