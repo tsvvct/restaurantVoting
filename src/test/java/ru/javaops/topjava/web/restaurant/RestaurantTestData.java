@@ -12,7 +12,7 @@ import static ru.javaops.topjava.web.menuitem.MenuItemTestData.*;
 
 public class RestaurantTestData {
     public static final MatcherFactory.Matcher<Restaurant> RESTAURANT_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class, "menuItems");
-    public static MatcherFactory.Matcher<Restaurant> RESTAURANT_WITH_MENU_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class, "menuItems.restaurants");
+    public static MatcherFactory.Matcher<Restaurant> RESTAURANT_WITH_MENU_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(Restaurant.class, "menuItems.restaurant");
 
     public static final int RESTAURANT1_ID = 1;
     public static final int RESTAURANT2_ID = 2;
