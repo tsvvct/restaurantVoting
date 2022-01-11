@@ -15,20 +15,12 @@ import java.util.Optional;
 public interface RestaurantRepository extends BaseRepository<Restaurant>, JpaSpecificationExecutor<Restaurant> {
 
     @EntityGraph(attributePaths = {"menuItems"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("SELECT r FROM Restaurant r WHERE r.id=?1")
-    Optional<Restaurant> findByIdWithMenu(int id);
-
-    @EntityGraph(attributePaths = {"menuItems"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("SELECT r FROM Restaurant r LEFT JOIN r.menuItems rm ON (r.id = ?1 and (?2 is null or rm.menuDate = ?2)) " +
-            "WHERE r.id = ?1")
-    Optional<Restaurant> findByIdWithMenuForDateOptional(int id, LocalDate menuDate);
+    @Query("SELECT r FROM Restaurant r LEFT JOIN r.menuItems rm ON (r.id = :restaurant_id and rm.menuDate = :menu_date) " +
+            "WHERE r.id = :restaurant_id")
+    Optional<Restaurant> findByIdWithMenuForDateOptional(@Param("restaurant_id") int id, @Param("menu_date") LocalDate menuDate);
 
     @EntityGraph(attributePaths = {"menuItems"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("FROM Restaurant r LEFT JOIN r.menuItems rm " +
-            "ON r = rm.restaurant and (:menu_date is null or rm.menuDate = :menu_date)")
+            "ON r = rm.restaurant and rm.menuDate = :menu_date")
     List<Restaurant> findAllWithMenuForDate(@Param("menu_date") LocalDate menuDate);
-
-    @EntityGraph(attributePaths = {"menuItems"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("SELECT r FROM Restaurant r")
-    List<Restaurant> findAllWithMenuItems();
 }

@@ -24,13 +24,9 @@ public interface UserVoteRepository extends BaseRepository<UserVote> {
     Optional<UserVote> getVoteForUserAndVoteDate(@Param("user_id") int userId, @Param("vote_date") LocalDate menuDate);
 
     @EntityGraph(attributePaths = {"user"}, type = EntityGraph.EntityGraphType.LOAD)
-    @Query("FROM UserVote uv LEFT JOIN uv.user LEFT JOIN uv.restaurant where uv.user.id = :user_id")
-    List<UserVote> getUserVotes(@Param("user_id") int userId);
-
-    @EntityGraph(attributePaths = {"user"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("FROM UserVote uv LEFT JOIN uv.user LEFT JOIN uv.restaurant " +
-            "where uv.user.id = :user_id and (:voted_from is null or uv.voteDate >= :voted_from) " +
-            "and (:voted_to is null or uv.voteDate <= :voted_to)")
+            "where uv.user.id = :user_id and (coalesce(:voted_from, null) is null or uv.voteDate >= :voted_from) " +
+            "and (coalesce(:voted_to, null) is null or uv.voteDate <= :voted_to)")
     List<UserVote> getUserVotesFiltered(@Param("user_id") int userId, @Param("voted_from") LocalDate votedFrom,
                                         @Param("voted_to") LocalDate votedTo);
 
