@@ -22,6 +22,10 @@ import java.util.List;
 @AllArgsConstructor
 public class Restaurant extends NamedEntity implements HasId {
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    public List<MenuItem> menuItems;
+
     public Restaurant(Integer id) {
         super(id, null);
     }
@@ -30,10 +34,6 @@ public class Restaurant extends NamedEntity implements HasId {
         super(id, name);
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    public List<MenuItem> menuItems;
-
     @Override
     public String toString() {
         return "Restaurant:{" +
@@ -41,7 +41,7 @@ public class Restaurant extends NamedEntity implements HasId {
                 "name:" + this.getName() + "; " +
                 "menu:" + (this.menuItems != null ? this.menuItems.stream()
                 .map(item -> "id:" + item.getId() + "; " +
-                        "name" + item.getName() + "; " +
+                        "name:" + item.getName() + "; " +
                         "price:" + item.getPrice() + "; " +
                         "dt: " + item.getMenuDate())
                 .toList()

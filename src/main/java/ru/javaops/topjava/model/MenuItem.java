@@ -44,15 +44,11 @@ public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
     @Column(name = "menu_date")
     private LocalDate menuDate = LocalDate.now();
 
-    @Override
-    public String toString() {
-        return "menuItem:{" +
-                "id:" + this.getId() + "; " +
-                "name:" + this.getName() + "; " +
-                "price:" + this.getPrice() + "; " +
-                "dt:" + this.getMenuDate() + "; " +
-                "rest_id:" + (this.restaurant != null ? this.restaurant.getId() : "null");
-
+    public MenuItem(Integer id, String name, Restaurant restaurant, Integer price, LocalDate menuDate) {
+        super(id, name);
+        this.restaurant = restaurant;
+        this.price = price;
+        this.menuDate = menuDate;
     }
 
     @JsonProperty("restaurant")
@@ -60,10 +56,14 @@ public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
         this.restaurant = JsonHelper.getRestaurantFromId(id);
     }
 
-    public MenuItem(Integer id, String name, Restaurant restaurant, Integer price, LocalDate menuDate) {
-        super(id, name);
-        this.restaurant = restaurant;
-        this.price = price;
-        this.menuDate = menuDate;
+    @Override
+    public String toString() {
+        return "MenuItem:{" +
+                "id:" + this.getId() + "; " +
+                "name:" + this.getName() + "; " +
+                "price:" + this.getPrice() + "; " +
+                "dt:" + this.getMenuDate() + "; " +
+                "rest_id:" + (this.restaurant != null ? this.restaurant.getId() : "null");
+
     }
 }

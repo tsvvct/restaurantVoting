@@ -61,11 +61,11 @@ public class UserVote extends BaseEntity implements HasIdAndRestaurant {
 
     @Override
     public String toString() {
-        return "UserVote{" +
-                "id=" + id +
-                ", user=" + user.getId() +
-                ", restaurant=" + restaurant.getId() +
-                ", voteDate=" + voteDate +
+        return "UserVote:{" +
+                "id:" + id + "; " +
+                "user:" + user.getId() + "; " +
+                "restaurant:" + restaurant.getId() + "; " +
+                "voteDate:" + voteDate +
                 '}';
     }
 }
