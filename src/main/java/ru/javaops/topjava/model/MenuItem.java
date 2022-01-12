@@ -14,7 +14,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
 import ru.javaops.topjava.HasIdAndRestaurant;
 import ru.javaops.topjava.util.ChildAsIdOnlySerializer;
-import ru.javaops.topjava.util.JsonHelper;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -53,7 +52,7 @@ public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
 
     @JsonProperty("restaurant")
     public void setRestaurantFromId(Integer id) {
-        this.restaurant = JsonHelper.getRestaurantFromId(id);
+        this.restaurant = new Restaurant(id, null);
     }
 
     @Override

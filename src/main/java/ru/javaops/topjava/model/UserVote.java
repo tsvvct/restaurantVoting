@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.javaops.topjava.HasIdAndRestaurant;
 import ru.javaops.topjava.util.ChildAsIdOnlySerializer;
-import ru.javaops.topjava.util.JsonHelper;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -22,7 +21,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserVote extends BaseEntity implements HasIdAndRestaurant {
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
@@ -42,21 +40,9 @@ public class UserVote extends BaseEntity implements HasIdAndRestaurant {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     LocalDate voteDate = LocalDate.now();
 
-    public UserVote(Integer id, User user, Restaurant restaurant, LocalDate voteDate) {
-        super(id);
-        this.user = user;
-        this.restaurant = restaurant;
-        this.voteDate = voteDate;
-    }
-
     @JsonProperty("restaurant")
     public void setRestaurantFromId(Integer id) {
-        this.restaurant = JsonHelper.getRestaurantFromId(id);
-    }
-
-    @JsonProperty("user")
-    public void setUserFromId(Integer id) {
-        this.user = JsonHelper.getUserFromId(id);
+        this.restaurant = new Restaurant(id, null);
     }
 
     @Override

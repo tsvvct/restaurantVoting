@@ -14,9 +14,9 @@ public class MenuItemTestData {
 
     public static final LocalDate testDate = LocalDate.now();
 
-    private static final Restaurant restaurant1 = new Restaurant(1);
-    private static final Restaurant restaurant2 = new Restaurant(2);
-    private static final Restaurant restaurant3 = new Restaurant(3);
+    private static final Restaurant restaurant1 = new Restaurant(1, null);
+    private static final Restaurant restaurant2 = new Restaurant(2, null);
+    private static final Restaurant restaurant3 = new Restaurant(3, null);
 
     public static final MenuItem restaurant1_menuitem1 = new MenuItem(MENU_ITEM1_ID, "item_1 restaurant_1", restaurant1, 1000, testDate.minusDays(1));
     public static final MenuItem restaurant1_menuitem2 = new MenuItem(MENU_ITEM1_ID + 1, "item_2 restaurant_1", restaurant1, 1200, testDate.minusDays(1));

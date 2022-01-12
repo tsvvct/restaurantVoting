@@ -21,14 +21,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Restaurant extends NamedEntity implements HasId {
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
     public List<MenuItem> menuItems;
-
-    public Restaurant(Integer id) {
-        super(id, null);
-    }
 
     public Restaurant(Integer id, String name) {
         super(id, name);
