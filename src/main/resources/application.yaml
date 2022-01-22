@@ -11,7 +11,7 @@ spring:
         default_batch_fetch_size: 20
         jdbc.batch_size: 20
   datasource:
-    url: jdbc:h2:mem:topjava
+    url: jdbc:h2:mem:restaurantvoting
     username: sa
     password:
 
@@ -28,7 +28,7 @@ spring:
 logging:
   level:
     root: WARN
-    ru.javaops.topjava: DEBUG
+    com.github.tsvvct.restaurantvoting: DEBUG
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
 
 server.servlet:

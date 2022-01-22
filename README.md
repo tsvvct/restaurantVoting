@@ -10,7 +10,7 @@
 
 Credentials:
 ```
-User:  user@yandex.ru / password
+User:  user@yandex.com / password
 Admin: admin@gmail.com / admin
 ```
 Conditions:
