@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import com.github.tsvvct.restaurantvoting.util.ChildAsIdOnlySerializer;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -18,27 +20,35 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @JsonPropertyOrder({"id", "user", "restaurant", ""})
-@AllArgsConstructor
 @NoArgsConstructor
 public class UserVote extends BaseEntity implements HasIdAndRestaurant {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonSerialize(using = ChildAsIdOnlySerializer.class)
-    User user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "restaurant_id", nullable = false)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonSerialize(using = ChildAsIdOnlySerializer.class)
-    Restaurant restaurant;
+    private Restaurant restaurant;
 
     @Column(name = "vote_date")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    LocalDate voteDate = LocalDate.now();
+    private LocalDate voteDate = LocalDate.now();
+
+    public UserVote(Integer id, User user, Restaurant restaurant, LocalDate voteDate) {
+        super(id);
+        this.user = user;
+        this.restaurant = restaurant;
+        this.voteDate = voteDate;
+    }
 
     @JsonProperty("restaurant")
     public void setRestaurantFromId(Integer id) {
@@ -49,7 +59,6 @@ public class UserVote extends BaseEntity implements HasIdAndRestaurant {
     public String toString() {
         return "UserVote:{" +
                 "id:" + id + "; " +
-                "user:" + user.getId() + "; " +
                 "restaurant:" + restaurant.getId() + "; " +
                 "voteDate:" + voteDate +
                 '}';

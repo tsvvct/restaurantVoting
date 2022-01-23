@@ -12,7 +12,7 @@ import java.util.List;
 public interface MenuItemRepository extends BaseRepository<MenuItem> {
 
     @Query("SELECT m from MenuItem m WHERE (:restaurantId is null or m.restaurant.id=:restaurantId) " +
-            "AND (coalesce(:menuDate, null) is null or m.menuDate = :menuDate)")
+            "AND (:menuDate is null or m.menuDate = :menuDate)")
     List<MenuItem> findAllByRestaurantId(@Param("restaurantId") Integer restaurantId,
                                          @Param("menuDate") LocalDate menuDate);
 

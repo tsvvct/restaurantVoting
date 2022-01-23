@@ -19,7 +19,7 @@ public class RestaurantNotNullValidator implements org.springframework.validatio
 
     @Override
     public boolean supports(@NonNull Class<?> clazz) {
-        return HasId.class.isAssignableFrom(clazz);
+        return HasIdAndRestaurant.class.isAssignableFrom(clazz);
     }
 
     @Override

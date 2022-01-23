@@ -6,10 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.github.tsvvct.restaurantvoting.HasIdAndRestaurant;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
@@ -23,7 +21,6 @@ import java.time.LocalDate;
 @Table(name = "menu_item")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
     @NotNull
@@ -33,11 +30,12 @@ public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonSerialize(using = ChildAsIdOnlySerializer.class)
-    Restaurant restaurant;
+    private Restaurant restaurant;
 
     @NotNull
     @Range(min = 1)
-    Integer price;
+    @Schema(description = "price in cents", example = "for 10.00$ shold be 1000")
+    private Integer price;
 
     @NotNull
     @Column(name = "menu_date")
@@ -62,7 +60,8 @@ public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
                 "name:" + this.getName() + "; " +
                 "price:" + this.getPrice() + "; " +
                 "dt:" + this.getMenuDate() + "; " +
-                "rest_id:" + (this.restaurant != null ? this.restaurant.getId() : "null");
+                "rest_id:" + (this.restaurant != null ? this.restaurant.getId() : "null")
+                + "}";
 
     }
 }

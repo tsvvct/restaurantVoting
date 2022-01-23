@@ -13,7 +13,7 @@ public class DateTimeUtil {
         setDefaultClock();
     }
 
-    public static boolean checkVotingIsOver() {
+    public static boolean isVotingOver() {
         boolean result = LocalTime.now(clock).isAfter(endVotingTime);
         setDefaultClock();
         return result;

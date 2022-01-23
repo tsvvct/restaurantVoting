@@ -1,5 +1,9 @@
 package com.github.tsvvct.restaurantvoting.web.restaurant;
 
+import com.github.tsvvct.restaurantvoting.model.Restaurant;
+import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -9,10 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import com.github.tsvvct.restaurantvoting.model.MenuItem;
-import com.github.tsvvct.restaurantvoting.model.Restaurant;
-import com.github.tsvvct.restaurantvoting.repository.MenuItemRepository;
-import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,10 +27,7 @@ public class RestaurantController {
     static final String REST_URL = "/api/restaurants";
 
     @Autowired
-    protected RestaurantRepository repository;
-
-    @Autowired
-    protected MenuItemRepository menuItemRepository;
+    private RestaurantRepository repository;
 
     @GetMapping("/{id}")
     @Cacheable
@@ -40,19 +37,16 @@ public class RestaurantController {
     }
 
     @GetMapping("/{id}/with-menu")
+    @Operation(
+            summary = "Return restaurant with menu",
+            description = "Returns restaurant with menu on the specified date, if date is empty, the menu for today will be returned."
+    )
     public ResponseEntity<Restaurant> getWithMenuItems(@PathVariable int id,
-                                                       @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
+                                                       @Parameter(description = "Date to get menu for. If empty current date is used.") @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
+        LocalDate menuDateForQuery = Objects.requireNonNullElse(menuDate, LocalDate.now());
         log.info("get restaurant with menu items for date={} for id={}",
-                Objects.requireNonNullElse(menuDate, LocalDate.now()), id);
-        return ResponseEntity.of(repository.findByIdWithMenuForDateOptional(id,
-                Objects.requireNonNullElse(menuDate, LocalDate.now())));
-    }
-
-    @GetMapping("/{id}/menu-items")
-    public List<MenuItem> getRestaurantMenuItems(@PathVariable int id,
-                                                 @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
-        log.info("get menu items for date={} for restaurant with id={}", menuDate, id);
-        return menuItemRepository.findAllByRestaurantId(id, menuDate);
+                menuDateForQuery, id);
+        return ResponseEntity.of(repository.findByIdWithMenuForDateOptional(id, menuDateForQuery));
     }
 
     @GetMapping
@@ -64,7 +58,11 @@ public class RestaurantController {
 
     @GetMapping("/with-menu")
     @Cacheable
-    public List<Restaurant> getAllWithMenu(@RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
+    @Operation(
+            summary = "Return all restaurants with menu",
+            description = "Returns all restaurants with menu on the specified date, if date is empty, the menu for today will be returned."
+    )
+    public List<Restaurant> getAllWithMenu(@Parameter(description = "Date to get menu for. If empty current date is used.") @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
         log.info("get all restaurants with menu items for date={}", Objects.requireNonNullElse(menuDate, LocalDate.now()));
         return repository.findAllWithMenuForDate(Objects.requireNonNullElse(menuDate, LocalDate.now()));
     }

@@ -1,5 +1,9 @@
 package com.github.tsvvct.restaurantvoting.web.uservote;
 
+import com.github.tsvvct.restaurantvoting.model.UserVote;
+import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
+import com.github.tsvvct.restaurantvoting.service.UserVoteService;
+import com.github.tsvvct.restaurantvoting.web.AuthUser;
 import com.github.tsvvct.restaurantvoting.web.validation.RestaurantHasMenuValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +16,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import com.github.tsvvct.restaurantvoting.model.UserVote;
-import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
-import com.github.tsvvct.restaurantvoting.service.UserVoteService;
-import com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil;
-import com.github.tsvvct.restaurantvoting.web.AuthUser;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -24,8 +23,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.assureIdConsistent;
 
 @RestController
 @RequestMapping(value = UserVoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -35,17 +32,18 @@ public class UserVoteController {
     static final String REST_URL = "/api/profile/votes";
 
     @Autowired
-    protected UserVoteRepository repository;
+    private UserVoteRepository repository;
 
     @Autowired
-    protected UserVoteService service;
+    private UserVoteService service;
 
     @Autowired
     private RestaurantHasMenuValidator restaurantValidator;
 
     @InitBinder
-    protected void initBinder(WebDataBinder binder) {
-        binder.setValidator(restaurantValidator);
+    private void initBinder(WebDataBinder binder) {
+        binder.
+                setValidator(restaurantValidator);
     }
 
     @GetMapping("/{id}")
@@ -58,16 +56,15 @@ public class UserVoteController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
         log.info("delete vote {} for user {}", id, authUser.id());
-        ValidationUtil.checkVotingIsOver();
         service.delete(id, authUser.id());
     }
 
     @GetMapping("/for-date")
     public ResponseEntity<UserVote> getForDate(@AuthenticationPrincipal AuthUser authUser,
                                                @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDate) {
-        log.info("get vote for {} for user {}", Objects.requireNonNullElse(voteDate, LocalDate.now()), authUser.id());
-        Optional<UserVote> userVote = repository.getVoteForUserAndVoteDate(authUser.id(),
-                Objects.requireNonNullElse(voteDate, LocalDate.now()));
+        LocalDate voteDateForQuery = Objects.requireNonNullElse(voteDate, LocalDate.now());
+        log.info("get vote for {} for user {}", voteDateForQuery, authUser.id());
+        Optional<UserVote> userVote = repository.getVoteForUserAndVoteDate(authUser.id(), voteDateForQuery);
         return ResponseEntity.of(userVote);
     }
 
@@ -75,18 +72,16 @@ public class UserVoteController {
     public List<UserVote> getUserVotes(@AuthenticationPrincipal AuthUser authUser,
                                        @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateFrom,
                                        @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateTo) {
+        log.info("get votes from {} to {} for user {}", voteDateFrom, voteDateTo, authUser.id());
         return repository.getUserVotesFiltered(authUser.id(), voteDateFrom, voteDateTo);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    protected ResponseEntity<UserVote> createWithLocation(@AuthenticationPrincipal AuthUser authUser,
-                                                          @Valid @RequestBody UserVote vote) {
+    public ResponseEntity<UserVote> createWithLocation(@AuthenticationPrincipal AuthUser authUser,
+                                                       @Valid @RequestBody UserVote vote) {
         log.info("register vote for user {}", authUser.id());
-        ValidationUtil.checkVotingIsOver();
-        ValidationUtil.checkNew(vote);
-        vote.setUser(authUser.getUser());
-        UserVote created = service.create(vote);
+        UserVote created = service.create(vote, authUser.getUser());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -98,9 +93,7 @@ public class UserVoteController {
     public void update(@AuthenticationPrincipal AuthUser authUser,
                        @Valid @RequestBody UserVote vote, @PathVariable int id) {
         int userId = authUser.id();
-        log.info("update vote {} for user {}", vote, userId);
-        ValidationUtil.checkVotingIsOver();
-        assureIdConsistent(vote, id);
-        service.save(vote, id, authUser.getUser());
+        log.info("update vote id {} for user {}", id, userId);
+        service.update(vote, id, userId);
     }
 }

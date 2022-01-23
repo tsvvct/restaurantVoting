@@ -11,13 +11,13 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class UserVoteTo {
 
-    Integer id;
+    private Integer id;
 
-    Integer user;
+    private Integer user;
 
-    Integer restaurant;
+    private Integer restaurant;
 
-    LocalDate voteDate;
+    private LocalDate voteDate;
 
     @Override
     public String toString() {

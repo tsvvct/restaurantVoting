@@ -36,7 +36,7 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(UserVoteTestData.USERTO_VOTE_MATCHER.contentJson(UserVoteTestData.userVote1));
+                .andExpect(UserVoteTestData.USER_VOTE_TO_MATCHER.contentJson(UserVoteTestData.userVote1));
     }
 
     @Test
@@ -59,7 +59,16 @@ class UserVoteControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = UserTestData.USER_MAIL)
     void deletePreviousVote() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + UserVoteTestData.USER_VOTE1_ID))
-                .andExpect(status().is(409));
+                .andExpect(status().is(422));
+        assertTrue(userVoteRepository.findById(UserVoteTestData.USER_VOTE1_ID).isPresent());
+    }
+
+    @Test
+    @WithUserDetails(value = UserTestData.USER_MAIL)
+    void deleteVotingIsOver() throws Exception {
+        DateTimeUtil.moveClock(2);
+        perform(MockMvcRequestBuilders.delete(REST_URL + UserVoteTestData.USER_VOTE1_ID))
+                .andExpect(status().is(422));
         assertTrue(userVoteRepository.findById(UserVoteTestData.USER_VOTE1_ID).isPresent());
     }
 
@@ -71,7 +80,7 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(UserVoteTestData.USERTO_VOTE_MATCHER.contentJson(UserVoteTestData.userVote1));
+                .andExpect(UserVoteTestData.USER_VOTE_TO_MATCHER.contentJson(UserVoteTestData.userVote1));
     }
 
     @Test
@@ -81,7 +90,7 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(UserVoteTestData.USERTO_VOTE_MATCHER.contentJson(UserVoteTestData.userVote1, UserVoteTestData.userVote2));
+                .andExpect(UserVoteTestData.USER_VOTE_TO_MATCHER.contentJson(UserVoteTestData.userVote1, UserVoteTestData.userVote2));
     }
 
     @Test
@@ -93,7 +102,7 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(UserVoteTestData.USERTO_VOTE_MATCHER.contentJson(List.of(UserVoteTestData.userVote1)));
+                .andExpect(UserVoteTestData.USER_VOTE_TO_MATCHER.contentJson(List.of(UserVoteTestData.userVote1)));
     }
 
     @Test
@@ -105,11 +114,11 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(newVote)))
                 .andExpect(status().isCreated());
 
-        UserVoteTo created = UserVoteTestData.USERTO_VOTE_MATCHER.readFromJson(action);
+        UserVoteTo created = UserVoteTestData.USER_VOTE_TO_MATCHER.readFromJson(action);
         int newId = created.getId();
         newVote.setId(newId);
-        UserVoteTestData.USERTO_VOTE_MATCHER.assertMatch(created, newVote);
-        UserVoteTestData.USERTO_VOTE_MATCHER.assertMatch(getUserVoteToFromUser(userVoteRepository.getById(newId)), newVote);
+        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(created, newVote);
+        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(getUserVoteToFromUser(userVoteRepository.getById(newId)), newVote);
     }
 
     @Test
@@ -132,18 +141,27 @@ class UserVoteControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isNoContent());
 
-        UserVoteTestData.USERTO_VOTE_MATCHER.assertMatch(getUserVoteToFromUser(userVoteRepository.getById(UserVoteTestData.USER_VOTE1_ID + 1)), updated);
+        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(getUserVoteToFromUser(userVoteRepository.getById(UserVoteTestData.USER_VOTE1_ID + 1)), updated);
+    }
+
+    @Test
+    @WithUserDetails(value = UserTestData.USER_MAIL)
+    void updatePrevious() throws Exception {
+        UserVoteTo updated = UserVoteTestData.getUpdatedPrevious();
+        perform(MockMvcRequestBuilders.put(REST_URL + (UserVoteTestData.USER_VOTE1_ID))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated)))
+                .andExpect(status().is(422));
     }
 
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
-    void createVotingIsOver() throws Exception {
+    void updateVotingIsOver() throws Exception {
         DateTimeUtil.moveClock(2);
-        UserVoteTo newVote = UserVoteTestData.getNew();
-        perform(MockMvcRequestBuilders.post(REST_URL)
+        UserVoteTo updated = UserVoteTestData.getUpdated();
+        perform(MockMvcRequestBuilders.put(REST_URL + (UserVoteTestData.USER_VOTE1_ID + 1))
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(newVote)))
+                .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().is(422));
-
     }
 }

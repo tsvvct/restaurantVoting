@@ -1,6 +1,7 @@
 package com.github.tsvvct.restaurantvoting.to;
 
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @Value

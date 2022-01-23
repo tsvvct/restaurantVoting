@@ -46,27 +46,6 @@ class RestaurantControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
-    void getRestaurantMenuItems() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + RestaurantTestData.RESTAURANT1_ID + "/menu-items"))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MenuItemTestData.MENU_ITEM_MATCHER.contentJson(MenuItemTestData.restaurant1MenuItems));
-    }
-
-    @Test
-    @WithUserDetails(value = UserTestData.ADMIN_MAIL)
-    void getRestaurantMenuItemsForDate() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL + RestaurantTestData.RESTAURANT1_ID + "/menu-items")
-                .param("menuDate", MenuItemTestData.testDate.toString()))
-                .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MenuItemTestData.MENU_ITEM_MATCHER.contentJson(MenuItemTestData.restaurant1_menuitem3, MenuItemTestData.restaurant1_menuitem4));
-    }
-
-    @Test
-    @WithUserDetails(value = UserTestData.ADMIN_MAIL)
     void getWithMenuItemsForDate() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + RestaurantTestData.RESTAURANT1_ID + "/with-menu")
                 .param("menuDate", MenuItemTestData.testDate.toString()))

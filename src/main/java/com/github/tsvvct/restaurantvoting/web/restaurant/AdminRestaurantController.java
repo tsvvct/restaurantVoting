@@ -1,5 +1,6 @@
 package com.github.tsvvct.restaurantvoting.web.restaurant;
 
+import com.github.tsvvct.restaurantvoting.service.RestaurantService;
 import com.github.tsvvct.restaurantvoting.to.RestaurantTo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,10 @@ public class AdminRestaurantController {
     static final String REST_URL = "/api/admin/restaurants";
 
     @Autowired
-    protected RestaurantRepository repository;
+    private RestaurantRepository repository;
+
+    @Autowired
+    private RestaurantService service;
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -46,8 +50,7 @@ public class AdminRestaurantController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody RestaurantTo restaurantTo) {
         log.info("create restaurant with id={}", restaurantTo);
-        checkNew(restaurantTo);
-        Restaurant created = repository.save(RestaurantUtil.createNewFromTo(restaurantTo));
+        Restaurant created = service.create(restaurantTo);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -60,10 +63,6 @@ public class AdminRestaurantController {
     @Transactional
     public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
         log.info("update restaurant {} with id={}", restaurantTo, id);
-        Restaurant restaurant = RestaurantUtil.createNewFromTo(restaurantTo);
-        assureIdConsistent(restaurant, id);
-        repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Restaurant with id=" + id + " not found"));
-        repository.save(restaurant);
+        service.update(restaurantTo, id);
     }
 }

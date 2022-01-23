@@ -30,17 +30,17 @@ public class MenuItemController {
     static final String REST_URL = "/api/admin/menu-items";
 
     @Autowired
-    protected MenuItemRepository repository;
+    private MenuItemRepository repository;
 
     @Autowired
-    protected MenuItemService service;
+    private MenuItemService service;
 
     @Autowired
-    private RestaurantNotNullValidator restValidator;
+    private RestaurantNotNullValidator restaurantValidator;
 
     @InitBinder
-    protected void initBinder(WebDataBinder binder) {
-        binder.addValidators(restValidator);
+    private void initBinder(WebDataBinder binder) {
+        binder.addValidators(restaurantValidator);
     }
 
     @GetMapping("/{id}")
@@ -69,8 +69,7 @@ public class MenuItemController {
     @CacheEvict(value = "restaurants", allEntries = true)
     public ResponseEntity<MenuItem> createWithLocation(@Valid @RequestBody MenuItem menuItem) {
         log.info("create menu item {}", menuItem);
-        ValidationUtil.checkNew(menuItem);
-        MenuItem created = repository.save(menuItem);
+        MenuItem created = service.create(menuItem);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -82,7 +81,6 @@ public class MenuItemController {
     @CacheEvict(value = "restaurants", allEntries = true)
     public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int id) {
         log.info("update menu item {} with id={}", menuItem, id);
-        ValidationUtil.assureIdConsistent(menuItem, id);
-        service.save(menuItem, id);
+        service.update(menuItem, id);
     }
 }
