@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Configuration;
                 title = "REST API documentation",
                 version = "1.0",
                 description = """
-                        Spring Boot приложение по <a href='https://javaops.ru/view/topjava'>курсу TopJava</a>
-                        <p><b>Тестовые креденшелы:</b><br>
+                        Spring Boot application for <a href='https://javaops.ru/view/topjava'>TopJava course</a>
+                        <p><b>Credentials:</b><br>
                         - user@yandex.ru / password<br>
                         - admin@gmail.com / admin</p>
                         """,
