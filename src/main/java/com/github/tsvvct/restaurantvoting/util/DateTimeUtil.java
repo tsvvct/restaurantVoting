@@ -5,7 +5,7 @@ import java.time.LocalTime;
 
 @UtilityClass
 public class DateTimeUtil {
-    private static LocalTime endVotingTime = LocalTime.of(23, 59);
+    private static LocalTime endVotingTime = LocalTime.of(11, 0);
 
     public static boolean isVotingOver() {
         return LocalTime.now().isAfter(endVotingTime);
