@@ -1,7 +1,8 @@
 package com.github.tsvvct.restaurantvoting.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.tsvvct.restaurantvoting.HasId;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,8 @@ import java.util.List;
 public class Restaurant extends NamedEntity implements HasId {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonManagedReference
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<MenuItem> menuItems;
 
     public Restaurant(Integer id, String name) {
@@ -32,6 +35,7 @@ public class Restaurant extends NamedEntity implements HasId {
     public String toString() {
         return "Restaurant:{" +
                 "id:" + this.getId() + "; " +
-                "name:" + this.getName() + "}";
+                "name:" + this.getName()
+                + "}";
     }
 }

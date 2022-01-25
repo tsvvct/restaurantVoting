@@ -1,5 +1,6 @@
 package com.github.tsvvct.restaurantvoting.web.restaurant;
 
+import com.github.tsvvct.restaurantvoting.model.User;
 import com.github.tsvvct.restaurantvoting.service.RestaurantService;
 import com.github.tsvvct.restaurantvoting.to.RestaurantTo;
 import lombok.extern.slf4j.Slf4j;
@@ -57,12 +58,10 @@ public class AdminRestaurantController {
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @CacheEvict(allEntries = true)
-    @Transactional
-    public void update(@Valid @RequestBody RestaurantTo restaurantTo, @PathVariable int id) {
-        log.info("update restaurant {} with id={}", restaurantTo, id);
-        service.update(restaurantTo, id);
+    public Restaurant enable(@PathVariable int id, @Valid @RequestBody RestaurantTo restaurantTo) {
+        log.info("rename restaurant with id={}", id);
+        return service.patch(id, restaurantTo);
     }
 }

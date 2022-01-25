@@ -1,16 +1,17 @@
 package com.github.tsvvct.restaurantvoting.web.uservote;
 
-import com.github.tsvvct.restaurantvoting.model.UserVote;
 import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
-import com.github.tsvvct.restaurantvoting.web.AuthUser;
+import com.github.tsvvct.restaurantvoting.service.UserVoteService;
+import com.github.tsvvct.restaurantvoting.to.UserVoteTo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,13 +24,13 @@ public class AdminUserVoteController {
     static final String REST_URL = "/api/admin/votes";
 
     @Autowired
-    private UserVoteRepository repository;
+    private UserVoteService service;
 
     @GetMapping
-    public List<UserVote> get(@RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDate,
-                              @RequestParam @Nullable Integer restaurantId) {
+    public List<UserVoteTo> get(@RequestParam @Nullable Integer restaurantId,
+            @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDate) {
         LocalDate voteDateForQuery = Objects.requireNonNullElse(voteDate, LocalDate.now());
         log.info("get all votes for date {}", voteDateForQuery);
-        return repository.getAllFiltered(voteDateForQuery, restaurantId);
+        return service.getAllFiltered(voteDateForQuery, restaurantId);
     }
 }

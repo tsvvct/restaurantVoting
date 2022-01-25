@@ -1,16 +1,19 @@
 package com.github.tsvvct.restaurantvoting.service;
 
+import com.github.tsvvct.restaurantvoting.model.Restaurant;
 import com.github.tsvvct.restaurantvoting.model.User;
 import com.github.tsvvct.restaurantvoting.model.UserVote;
 import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
-import com.github.tsvvct.restaurantvoting.repository.UserRepository;
 import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
+import com.github.tsvvct.restaurantvoting.to.UserVoteTo;
+import com.github.tsvvct.restaurantvoting.util.UserVoteUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.*;
 
@@ -18,27 +21,48 @@ import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.
 @RequiredArgsConstructor
 public class UserVoteService {
     private final UserVoteRepository repository;
-    private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
 
     @Transactional
-    public UserVote update(UserVote userVote, int voteId, int userId) {
+    public UserVoteTo patch(UserVoteTo userVoteTo, int voteId, int userId) {
         checkVotingIsOver();
-        userVote.setId(voteId);
-        UserVote voteFromDb = repository.get(voteId, userId, LocalDate.now()).orElse(null);
-        checkNotFoundWithId(voteFromDb, voteId);
-        userVote.setUser(voteFromDb.getUser());
-        return repository.save(userVote);
+        UserVote userVote = repository.get(voteId, userId, LocalDate.now()).orElse(null);
+        checkNotFoundWithId(userVote, voteId);
+        userVote.setRestaurant(getRestaurantById(userVoteTo.getRestaurantId()));
+        return UserVoteUtil.createToFromVote(userVote);
     }
 
-    public UserVote create(UserVote userVote, User user) {
-        checkNew(userVote);
-        userVote.setUser(user);
-        return repository.save(userVote);
+    @Transactional
+    public UserVoteTo create(UserVoteTo userVoteTo, User user) {
+        checkNew(userVoteTo);
+        userVoteTo.setVoteDate(LocalDate.now());
+        UserVote userVote = UserVoteUtil.createVoteFromTo(userVoteTo, user, getRestaurantById(userVoteTo.getRestaurantId()));
+        return UserVoteUtil.createToFromVote(repository.save(userVote));
     }
 
     public void delete(int voteId, int userId) {
         checkVotingIsOver();
         checkNotFoundWithId(repository.delete(voteId, userId, LocalDate.now()) != 0, voteId);
+    }
+
+    public List<UserVoteTo> getUserVotesToFiltered(int userId, LocalDate voteDateFrom, LocalDate voteDateTo) {
+        return UserVoteUtil.getListToFromListOfVote(repository.getUserVotesFiltered(userId, voteDateFrom, voteDateTo));
+    }
+
+    public Optional<UserVoteTo> getForUserAndForDate(int userId, LocalDate voteDateForQuery) {
+        return Optional.ofNullable(UserVoteUtil.createToFromVote(repository.getVoteForUserAndVoteDate(userId, voteDateForQuery)
+                .orElse(null)));
+    }
+
+    public Optional<UserVoteTo> get(int id, int userId) {
+        return Optional.ofNullable(UserVoteUtil.createToFromVote(repository.get(id, userId).orElse(null)));
+    }
+
+    public List<UserVoteTo> getAllFiltered(LocalDate voteDateForQuery, Integer restaurantId) {
+        return UserVoteUtil.getListToFromListOfVote(repository.getAllFiltered(voteDateForQuery, restaurantId));
+    }
+
+    private Restaurant getRestaurantById(Integer id) {
+        return restaurantRepository.getById(id);
     }
 }

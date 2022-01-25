@@ -1,11 +1,12 @@
 package com.github.tsvvct.restaurantvoting.web.menuitem;
 
-import com.github.tsvvct.restaurantvoting.model.MenuItem;
-import com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil;
-import com.github.tsvvct.restaurantvoting.web.validation.RestaurantNotNullValidator;
+import com.github.tsvvct.restaurantvoting.repository.MenuItemRepository;
+import com.github.tsvvct.restaurantvoting.service.MenuItemService;
+import com.github.tsvvct.restaurantvoting.to.MenuItemTo;
+import com.github.tsvvct.restaurantvoting.web.validation.RestaurantValidator;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,8 +15,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import com.github.tsvvct.restaurantvoting.repository.MenuItemRepository;
-import com.github.tsvvct.restaurantvoting.service.MenuItemService;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -36,7 +35,7 @@ public class MenuItemController {
     private MenuItemService service;
 
     @Autowired
-    private RestaurantNotNullValidator restaurantValidator;
+    private RestaurantValidator restaurantValidator;
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {
@@ -44,32 +43,34 @@ public class MenuItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MenuItem> get(@PathVariable int id) {
+    public ResponseEntity<MenuItemTo> get(@PathVariable int id) {
         log.info("get menu item with id={}", id);
-        return ResponseEntity.of(repository.findById(id));
+        return ResponseEntity.of(service.get(id));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(cacheNames = "restaurants", allEntries = true)
     public void delete(@PathVariable int id) {
         log.info("delete menu item with id={}", id);
-        repository.deleteExisted(id);
+        service.delete(id);
     }
 
     @GetMapping
-    public List<MenuItem> getAllForRestaurant(@RequestParam @Nullable Integer restaurantId,
-                                              @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
+    @Operation(
+            summary = "Return all menu items by specified filter",
+            description = "Returns all menu items filtered with the specified date, restaurant."
+    )
+    public List<MenuItemTo> getAllFiltered(@RequestParam @Nullable Integer restaurantId,
+                                           @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
         log.info("get menu items for restaurant with id={} for date={}", restaurantId, menuDate);
-        return repository.findAllByRestaurantId(restaurantId, menuDate);
+        return service.getAllFiltered(restaurantId, menuDate);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @CacheEvict(value = "restaurants", allEntries = true)
-    public ResponseEntity<MenuItem> createWithLocation(@Valid @RequestBody MenuItem menuItem) {
-        log.info("create menu item {}", menuItem);
-        MenuItem created = service.create(menuItem);
+    public ResponseEntity<MenuItemTo> createWithLocation(@Valid @RequestBody MenuItemTo menuItemTo) {
+        log.info("create menu item {}", menuItemTo);
+        MenuItemTo created = service.create(menuItemTo);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
@@ -77,10 +78,8 @@ public class MenuItemController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(value = "restaurants", allEntries = true)
-    public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int id) {
-        log.info("update menu item {} with id={}", menuItem, id);
-        service.update(menuItem, id);
+    public MenuItemTo update(@PathVariable int id, @Valid @RequestBody MenuItemTo menuItemTo) {
+        log.info("update menu item with id={}", id);
+        return service.update(menuItemTo, id);
     }
 }

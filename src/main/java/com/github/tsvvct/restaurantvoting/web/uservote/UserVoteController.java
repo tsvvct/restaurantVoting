@@ -1,10 +1,11 @@
 package com.github.tsvvct.restaurantvoting.web.uservote;
 
-import com.github.tsvvct.restaurantvoting.model.UserVote;
 import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
 import com.github.tsvvct.restaurantvoting.service.UserVoteService;
+import com.github.tsvvct.restaurantvoting.to.RestaurantTo;
+import com.github.tsvvct.restaurantvoting.to.UserVoteTo;
 import com.github.tsvvct.restaurantvoting.web.AuthUser;
-import com.github.tsvvct.restaurantvoting.web.validation.RestaurantHasMenuValidator;
+import com.github.tsvvct.restaurantvoting.web.validation.RestaurantValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -38,18 +40,17 @@ public class UserVoteController {
     private UserVoteService service;
 
     @Autowired
-    private RestaurantHasMenuValidator restaurantValidator;
+    private RestaurantValidator restaurantValidator;
 
     @InitBinder
     private void initBinder(WebDataBinder binder) {
-        binder.
-                setValidator(restaurantValidator);
+        binder.addValidators(restaurantValidator);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserVote> get(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
+    public ResponseEntity<UserVoteTo> get(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id) {
         log.info("get vote {} for user {}", id, authUser.id());
-        return ResponseEntity.of(repository.get(id, authUser.id()));
+        return ResponseEntity.of(service.get(id, authUser.id()));
     }
 
     @DeleteMapping("/{id}")
@@ -60,40 +61,39 @@ public class UserVoteController {
     }
 
     @GetMapping("/for-date")
-    public ResponseEntity<UserVote> getForDate(@AuthenticationPrincipal AuthUser authUser,
-                                               @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDate) {
+    public ResponseEntity<UserVoteTo> getForDate(@AuthenticationPrincipal AuthUser authUser,
+            @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDate) {
         LocalDate voteDateForQuery = Objects.requireNonNullElse(voteDate, LocalDate.now());
         log.info("get vote for {} for user {}", voteDateForQuery, authUser.id());
-        Optional<UserVote> userVote = repository.getVoteForUserAndVoteDate(authUser.id(), voteDateForQuery);
-        return ResponseEntity.of(userVote);
+        Optional<UserVoteTo> userVoteTo = service.getForUserAndForDate(authUser.id(), voteDateForQuery);
+        return ResponseEntity.of(userVoteTo);
     }
 
     @GetMapping
-    public List<UserVote> getUserVotes(@AuthenticationPrincipal AuthUser authUser,
-                                       @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateFrom,
-                                       @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateTo) {
+    public List<UserVoteTo> getUserVotes(@AuthenticationPrincipal AuthUser authUser,
+             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateFrom,
+             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateTo) {
         log.info("get votes from {} to {} for user {}", voteDateFrom, voteDateTo, authUser.id());
-        return repository.getUserVotesFiltered(authUser.id(), voteDateFrom, voteDateTo);
+        return service.getUserVotesToFiltered(authUser.id(), voteDateFrom, voteDateTo);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserVote> createWithLocation(@AuthenticationPrincipal AuthUser authUser,
-                                                       @Valid @RequestBody UserVote vote) {
+    public ResponseEntity<UserVoteTo> createWithLocation(@AuthenticationPrincipal AuthUser authUser,
+                                                         @Valid @RequestBody UserVoteTo voteTo) {
         log.info("register vote for user {}", authUser.id());
-        UserVote created = service.create(vote, authUser.getUser());
+        UserVoteTo created = service.create(voteTo, authUser.getUser());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@AuthenticationPrincipal AuthUser authUser,
-                       @Valid @RequestBody UserVote vote, @PathVariable int id) {
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public UserVoteTo enable(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id,
+                       @Valid @RequestBody UserVoteTo voteTo) {
         int userId = authUser.id();
-        log.info("update vote id {} for user {}", id, userId);
-        service.update(vote, id, userId);
+        log.info("change vote with id={} for user with id={}", id, userId);
+        return service.patch(voteTo, id, userId);
     }
 }

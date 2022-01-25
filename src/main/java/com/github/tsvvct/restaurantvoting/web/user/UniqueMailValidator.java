@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import com.github.tsvvct.restaurantvoting.HasIdAndEmail;
 import com.github.tsvvct.restaurantvoting.web.SecurityUtil;
 
@@ -13,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Component
 @AllArgsConstructor
-public class UniqueMailValidator implements org.springframework.validation.Validator {
+public class UniqueMailValidator implements Validator {
     public static final String EXCEPTION_DUPLICATE_EMAIL = "User with this email already exists";
 
     private final UserRepository repository;
