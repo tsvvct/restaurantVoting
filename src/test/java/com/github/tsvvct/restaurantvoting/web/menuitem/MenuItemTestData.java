@@ -1,60 +1,69 @@
 package com.github.tsvvct.restaurantvoting.web.menuitem;
 
-import com.github.tsvvct.restaurantvoting.model.MenuItem;
-import com.github.tsvvct.restaurantvoting.model.Restaurant;
+import com.github.tsvvct.restaurantvoting.to.MenuItemTo;
 import com.github.tsvvct.restaurantvoting.web.MatcherFactory;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class MenuItemTestData {
-    public static final MatcherFactory.Matcher<MenuItem> MENU_ITEM_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(MenuItem.class, "restaurant");
+    public static final MatcherFactory.Matcher<MenuItemTo> MENU_ITEM_TO_MATCHER = MatcherFactory.usingIgnoringFieldsComparator(MenuItemTo.class, "restaurantId");
 
     public static final int MENU_ITEM1_ID = 1;
 
     public static final LocalDate testDate = LocalDate.now();
 
-    private static final Restaurant restaurant1 = new Restaurant(1, null);
-    private static final Restaurant restaurant2 = new Restaurant(2, null);
-    private static final Restaurant restaurant3 = new Restaurant(3, null);
+    private static final Integer restaurantId_1 = 1;
+    private static final Integer restaurantId_2 = 2;
+    private static final Integer restaurantId_3 = 3;
 
-    public static final MenuItem restaurant1_menuitem1 = new MenuItem(MENU_ITEM1_ID, "item_1 restaurant_1", restaurant1, 1000, testDate.minusDays(1));
-    public static final MenuItem restaurant1_menuitem2 = new MenuItem(MENU_ITEM1_ID + 1, "item_2 restaurant_1", restaurant1, 1200, testDate.minusDays(1));
-    public static final MenuItem restaurant1_menuitem3 = new MenuItem(MENU_ITEM1_ID + 2, "item_3 restaurant_1", restaurant1, 300, testDate);
-    public static final MenuItem restaurant1_menuitem4 = new MenuItem(MENU_ITEM1_ID + 3, "item_4 restaurant_1", restaurant1, 1300, testDate);
+    public static final MenuItemTo restaurant1_menuitem1 = new MenuItemTo(MENU_ITEM1_ID,
+            "item_1 restaurant_1", restaurantId_1, 1000, testDate.minusDays(1));
+    public static final MenuItemTo restaurant1_menuitem2 = new MenuItemTo(MENU_ITEM1_ID + 1,
+            "item_2 restaurant_1", restaurantId_1, 1200, testDate.minusDays(1));
+    public static final MenuItemTo restaurant1_menuitem3 = new MenuItemTo(MENU_ITEM1_ID + 2,
+            "item_3 restaurant_1", restaurantId_1, 300, testDate);
+    public static final MenuItemTo restaurant1_menuitem4 = new MenuItemTo(MENU_ITEM1_ID + 3,
+            "item_4 restaurant_1", restaurantId_1, 1300, testDate);
 
-    public static final MenuItem restaurant2_menuitem1 = new MenuItem(5, "item_1 restaurant_2", restaurant2, 1000, testDate.minusDays(1));
-    public static final MenuItem restaurant2_menuitem2 = new MenuItem(6, "item_2 restaurant_2", restaurant2, 1200, testDate.minusDays(1));
-    public static final MenuItem restaurant2_menuitem3 = new MenuItem(7, "item_3 restaurant_2", restaurant2, 1500, testDate);
-    public static final MenuItem restaurant2_menuitem4 = new MenuItem(8, "item_4 restaurant_2", restaurant2, 200, testDate);
+    public static final MenuItemTo restaurant2_menuitem1 = new MenuItemTo(MENU_ITEM1_ID + 4,
+            "item_1 restaurant_2", restaurantId_2, 1000, testDate.minusDays(1));
+    public static final MenuItemTo restaurant2_menuitem2 = new MenuItemTo(MENU_ITEM1_ID + 5,
+            "item_2 restaurant_2", restaurantId_2, 1200, testDate.minusDays(1));
+    public static final MenuItemTo restaurant2_menuitem3 = new MenuItemTo(MENU_ITEM1_ID + 6,
+            "item_3 restaurant_2", restaurantId_2, 1500, testDate);
+    public static final MenuItemTo restaurant2_menuitem4 = new MenuItemTo(MENU_ITEM1_ID + 7,
+            "item_4 restaurant_2", restaurantId_2, 200, testDate);
 
-    public static final MenuItem restaurant3_menuitem1 = new MenuItem(9, "item_1 restaurant_3", restaurant3, 1000, testDate.minusDays(1));
-    public static final MenuItem restaurant3_menuitem2 = new MenuItem(10, "item_2 restaurant_3", restaurant3, 1600, testDate.minusDays(1));
+    public static final MenuItemTo restaurant3_menuitem1 = new MenuItemTo(MENU_ITEM1_ID + 8,
+            "item_1 restaurant_3", restaurantId_3, 1000, testDate.minusDays(1));
+    public static final MenuItemTo restaurant3_menuitem2 = new MenuItemTo(MENU_ITEM1_ID + 9,
+            "item_2 restaurant_3", restaurantId_3, 1600, testDate.minusDays(1));
 
-    public static final List<MenuItem> restaurant1MenuItems = List.of(
+    public static final List<MenuItemTo> restaurant1MenuItems = List.of(
             restaurant1_menuitem1,
             restaurant1_menuitem2,
             restaurant1_menuitem3,
             restaurant1_menuitem4
     );
 
-    public static final List<MenuItem> restaurant2MenuItems = List.of(
+    public static final List<MenuItemTo> restaurant2MenuItems = List.of(
             restaurant2_menuitem1,
             restaurant2_menuitem2,
             restaurant2_menuitem3,
             restaurant2_menuitem4
     );
 
-    public static final List<MenuItem> restaurant3MenuItems = List.of(
+    public static final List<MenuItemTo> restaurant3MenuItems = List.of(
             restaurant3_menuitem1,
             restaurant3_menuitem2
     );
 
-    public static MenuItem getNew() {
-        return new MenuItem(null, "item_new", restaurant1, 1000, testDate.minusDays(1));
+    public static MenuItemTo getNew() {
+        return new MenuItemTo(null, "item_new", restaurantId_1, 1000, testDate.minusDays(1));
     }
 
-    public static MenuItem getUpdated() {
-        return new MenuItem(MENU_ITEM1_ID, "item_1 restaurant_1 updated", restaurant1, 1001, restaurant1_menuitem1.getMenuDate());
+    public static MenuItemTo getUpdated() {
+        return new MenuItemTo(MENU_ITEM1_ID, "item_1 restaurant_1 updated", restaurantId_1, 1001, restaurant1_menuitem1.getMenuDate());
     }
 }

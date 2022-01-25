@@ -1,26 +1,27 @@
 package com.github.tsvvct.restaurantvoting.web.uservote;
 
+import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
+import com.github.tsvvct.restaurantvoting.to.UserVoteTo;
 import com.github.tsvvct.restaurantvoting.util.DateTimeUtil;
+import com.github.tsvvct.restaurantvoting.util.JsonUtil;
 import com.github.tsvvct.restaurantvoting.web.AbstractControllerTest;
 import com.github.tsvvct.restaurantvoting.web.user.UserTestData;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
-import com.github.tsvvct.restaurantvoting.to.UserVoteTo;
-import com.github.tsvvct.restaurantvoting.util.JsonUtil;
 
 import java.util.List;
 
+import static com.github.tsvvct.restaurantvoting.util.UserVoteUtil.createToFromVote;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static com.github.tsvvct.restaurantvoting.util.TestUtil.getUserVoteToFromUser;
 
 class UserVoteControllerTest extends AbstractControllerTest {
 
@@ -28,6 +29,11 @@ class UserVoteControllerTest extends AbstractControllerTest {
 
     @Autowired
     private UserVoteRepository userVoteRepository;
+
+    @BeforeEach
+    public void setUp() {
+        DateTimeUtil.setDefaultClock();
+    }
 
     @Test
     @WithUserDetails(value = UserTestData.USER_MAIL)
@@ -107,7 +113,7 @@ class UserVoteControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = UserTestData.ADMIN_MAIL)
-    void createWithLocation() throws Exception {
+    void create() throws Exception {
         UserVoteTo newVote = UserVoteTestData.getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +124,24 @@ class UserVoteControllerTest extends AbstractControllerTest {
         int newId = created.getId();
         newVote.setId(newId);
         UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(created, newVote);
-        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(getUserVoteToFromUser(userVoteRepository.getById(newId)), newVote);
+        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(createToFromVote(userVoteRepository.getById(newId)), newVote);
+    }
+
+    @Test
+    @WithUserDetails(value = UserTestData.ADMIN_MAIL)
+    void createVotingIsOver() throws Exception {
+        DateTimeUtil.moveClock(2);
+        UserVoteTo newVote = UserVoteTestData.getNew();
+        ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(newVote)))
+                .andExpect(status().isCreated());
+
+        UserVoteTo created = UserVoteTestData.USER_VOTE_TO_MATCHER.readFromJson(action);
+        int newId = created.getId();
+        newVote.setId(newId);
+        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(created, newVote);
+        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(createToFromVote(userVoteRepository.getById(newId)), newVote);
     }
 
     @Test
@@ -134,21 +157,23 @@ class UserVoteControllerTest extends AbstractControllerTest {
 
     @Test
     @WithUserDetails(value = UserTestData.USER_MAIL)
-    void update() throws Exception {
+    void patch() throws Exception {
         UserVoteTo updated = UserVoteTestData.getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL + (UserVoteTestData.USER_VOTE1_ID + 1))
+        ResultActions action = perform(MockMvcRequestBuilders.patch(REST_URL + (UserVoteTestData.USER_VOTE1_ID + 1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
-        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(getUserVoteToFromUser(userVoteRepository.getById(UserVoteTestData.USER_VOTE1_ID + 1)), updated);
+        UserVoteTo patched = UserVoteTestData.USER_VOTE_TO_MATCHER.readFromJson(action);
+        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(patched, updated);
+        UserVoteTestData.USER_VOTE_TO_MATCHER.assertMatch(createToFromVote(userVoteRepository.getById(UserVoteTestData.USER_VOTE1_ID + 1)), updated);
     }
 
     @Test
     @WithUserDetails(value = UserTestData.USER_MAIL)
     void updatePrevious() throws Exception {
         UserVoteTo updated = UserVoteTestData.getUpdatedPrevious();
-        perform(MockMvcRequestBuilders.put(REST_URL + (UserVoteTestData.USER_VOTE1_ID))
+        perform(MockMvcRequestBuilders.patch(REST_URL + (UserVoteTestData.USER_VOTE1_ID))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().is(422));
@@ -159,7 +184,7 @@ class UserVoteControllerTest extends AbstractControllerTest {
     void updateVotingIsOver() throws Exception {
         DateTimeUtil.moveClock(2);
         UserVoteTo updated = UserVoteTestData.getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL + (UserVoteTestData.USER_VOTE1_ID + 1))
+        perform(MockMvcRequestBuilders.patch(REST_URL + (UserVoteTestData.USER_VOTE1_ID + 1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().is(422));

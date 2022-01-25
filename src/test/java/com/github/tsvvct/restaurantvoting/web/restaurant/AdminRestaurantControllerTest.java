@@ -1,21 +1,21 @@
 package com.github.tsvvct.restaurantvoting.web.restaurant;
 
+import com.github.tsvvct.restaurantvoting.model.Restaurant;
+import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
+import com.github.tsvvct.restaurantvoting.util.JsonUtil;
+import com.github.tsvvct.restaurantvoting.web.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import com.github.tsvvct.restaurantvoting.model.Restaurant;
-import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
-import com.github.tsvvct.restaurantvoting.util.JsonUtil;
-import com.github.tsvvct.restaurantvoting.web.AbstractControllerTest;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static com.github.tsvvct.restaurantvoting.web.restaurant.RestaurantTestData.*;
 import static com.github.tsvvct.restaurantvoting.web.user.UserTestData.ADMIN_MAIL;
 import static com.github.tsvvct.restaurantvoting.web.user.UserTestData.USER_MAIL;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class AdminRestaurantControllerTest extends AbstractControllerTest {
 
@@ -62,11 +62,13 @@ class AdminRestaurantControllerTest extends AbstractControllerTest {
     @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
         Restaurant updated = getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL + RESTAURANT1_ID)
+        ResultActions action = perform(MockMvcRequestBuilders.patch(REST_URL + RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
+        Restaurant patched = RESTAURANT_MATCHER.readFromJson(action);
+        RESTAURANT_MATCHER.assertMatch(patched, updated);
         RESTAURANT_MATCHER.assertMatch(restaurantRepository.getById(RESTAURANT1_ID), updated);
     }
 

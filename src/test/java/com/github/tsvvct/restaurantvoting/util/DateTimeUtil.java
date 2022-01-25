@@ -14,16 +14,14 @@ public class DateTimeUtil {
     }
 
     public static boolean isVotingOver() {
-        boolean result = LocalTime.now(clock).isAfter(endVotingTime);
-        setDefaultClock();
-        return result;
+        return LocalTime.now(clock).isAfter(endVotingTime);
     }
 
-    private static void setDefaultClock() {
+    public static void setDefaultClock() {
         clock = Clock.fixed(Instant.parse(UserVoteTestData.testDate + "T10:59:59.00Z"), ZoneId.of("UTC"));
     }
 
     public static void moveClock(int seconds) {
-        clock = Clock.offset(clock, Duration.ofSeconds(seconds));
+        DateTimeUtil.clock = Clock.offset(clock, Duration.ofSeconds(seconds));
     }
 }

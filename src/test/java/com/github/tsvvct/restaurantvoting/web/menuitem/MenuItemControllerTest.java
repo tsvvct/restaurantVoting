@@ -1,23 +1,24 @@
 package com.github.tsvvct.restaurantvoting.web.menuitem;
 
+import com.github.tsvvct.restaurantvoting.repository.MenuItemRepository;
+import com.github.tsvvct.restaurantvoting.to.MenuItemTo;
+import com.github.tsvvct.restaurantvoting.util.JsonUtil;
+import com.github.tsvvct.restaurantvoting.web.AbstractControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import com.github.tsvvct.restaurantvoting.model.MenuItem;
-import com.github.tsvvct.restaurantvoting.repository.MenuItemRepository;
-import com.github.tsvvct.restaurantvoting.util.JsonUtil;
-import com.github.tsvvct.restaurantvoting.web.AbstractControllerTest;
 
+import static com.github.tsvvct.restaurantvoting.util.MenuItemUtil.createToFromItem;
+import static com.github.tsvvct.restaurantvoting.web.menuitem.MenuItemTestData.*;
+import static com.github.tsvvct.restaurantvoting.web.user.UserTestData.ADMIN_MAIL;
+import static com.github.tsvvct.restaurantvoting.web.user.UserTestData.USER_MAIL;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static com.github.tsvvct.restaurantvoting.web.menuitem.MenuItemTestData.*;
-import static com.github.tsvvct.restaurantvoting.web.user.UserTestData.ADMIN_MAIL;
-import static com.github.tsvvct.restaurantvoting.web.user.UserTestData.USER_MAIL;
 
 class MenuItemControllerTest extends AbstractControllerTest {
 
@@ -33,7 +34,7 @@ class MenuItemControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_ITEM_MATCHER.contentJson(restaurant1_menuitem1));
+                .andExpect(MENU_ITEM_TO_MATCHER.contentJson(restaurant1_menuitem1));
     }
 
     @Test
@@ -67,7 +68,7 @@ class MenuItemControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_ITEM_MATCHER.contentJson(restaurant1_menuitem1, restaurant1_menuitem2,
+                .andExpect(MENU_ITEM_TO_MATCHER.contentJson(restaurant1_menuitem1, restaurant1_menuitem2,
                         restaurant1_menuitem3, restaurant1_menuitem4));
     }
 
@@ -80,29 +81,29 @@ class MenuItemControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MENU_ITEM_MATCHER.contentJson(restaurant1_menuitem3, restaurant1_menuitem4));
+                .andExpect(MENU_ITEM_TO_MATCHER.contentJson(restaurant1_menuitem3, restaurant1_menuitem4));
     }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
-    void createWithLocation() throws Exception {
-        MenuItem newItem = getNew();
+    void create() throws Exception {
+        MenuItemTo newItem = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newItem)))
                 .andExpect(status().isCreated());
 
-        MenuItem created = MENU_ITEM_MATCHER.readFromJson(action);
+        MenuItemTo created = MENU_ITEM_TO_MATCHER.readFromJson(action);
         int newId = created.id();
         newItem.setId(newId);
-        MENU_ITEM_MATCHER.assertMatch(created, newItem);
-        MENU_ITEM_MATCHER.assertMatch(menuItemRepository.getById(newId), newItem);
+        MENU_ITEM_TO_MATCHER.assertMatch(created, newItem);
+        MENU_ITEM_TO_MATCHER.assertMatch(createToFromItem(menuItemRepository.getById(newId)), newItem);
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
     void createForbidden() throws Exception {
-        MenuItem newItem = getNew();
+        MenuItemTo newItem = getNew();
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newItem)))
@@ -112,19 +113,21 @@ class MenuItemControllerTest extends AbstractControllerTest {
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
     void update() throws Exception {
-        MenuItem updated = getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL + MENU_ITEM1_ID)
+        MenuItemTo updated = getUpdated();
+        ResultActions action = perform(MockMvcRequestBuilders.put(REST_URL + MENU_ITEM1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
-        MENU_ITEM_MATCHER.assertMatch(menuItemRepository.getById(MENU_ITEM1_ID), updated);
+        MenuItemTo patched = MENU_ITEM_TO_MATCHER.readFromJson(action);
+        MENU_ITEM_TO_MATCHER.assertMatch(patched, updated);
+        MENU_ITEM_TO_MATCHER.assertMatch(createToFromItem(menuItemRepository.getById(MENU_ITEM1_ID)), updated);
     }
 
     @Test
     @WithUserDetails(value = USER_MAIL)
     void updateForbidden() throws Exception {
-        MenuItem updated = getUpdated();
+        MenuItemTo updated = getUpdated();
         perform(MockMvcRequestBuilders.put(REST_URL + MENU_ITEM1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
