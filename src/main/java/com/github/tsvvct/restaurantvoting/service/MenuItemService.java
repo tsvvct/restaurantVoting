@@ -39,7 +39,8 @@ public class MenuItemService {
     @CacheEvict(allEntries = true)
     public MenuItemTo create(MenuItemTo menuItemTo) {
         checkNew(menuItemTo);
-        return MenuItemUtil.createToFromItem(repository.save(MenuItemUtil.createItemFromTo(menuItemTo, restaurantRepository.getById(menuItemTo.getRestaurantId()))));
+        return MenuItemUtil.createToFromItem(repository.save(
+                MenuItemUtil.createItemFromTo(menuItemTo, restaurantRepository.getById(menuItemTo.getRestaurantId()))));
     }
 
     public List<MenuItemTo> getAllFiltered(Integer restaurantId, LocalDate menuDate) {

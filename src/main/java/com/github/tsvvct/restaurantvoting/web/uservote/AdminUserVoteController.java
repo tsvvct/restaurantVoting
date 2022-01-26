@@ -1,6 +1,5 @@
 package com.github.tsvvct.restaurantvoting.web.uservote;
 
-import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
 import com.github.tsvvct.restaurantvoting.service.UserVoteService;
 import com.github.tsvvct.restaurantvoting.to.UserVoteTo;
 import lombok.extern.slf4j.Slf4j;

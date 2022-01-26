@@ -16,7 +16,8 @@ public class MenuItemUtil {
         if (item == null) {
             return null;
         } else {
-            return new MenuItemTo(item.getId(), item.getName(), item.getRestaurant().getId(), item.getPrice(), item.getMenuDate());
+            return new MenuItemTo(item.getId(), item.getName(), item.getRestaurant().getId(), item.getPrice(),
+                    item.getMenuDate());
         }
     }
 

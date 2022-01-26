@@ -61,7 +61,7 @@ public class MenuItemController {
             description = "Returns all menu items filtered with the specified date, restaurant."
     )
     public List<MenuItemTo> getAllFiltered(@RequestParam @Nullable Integer restaurantId,
-                                           @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
+            @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
         log.info("get menu items for restaurant with id={} for date={}", restaurantId, menuDate);
         return service.getAllFiltered(restaurantId, menuDate);
     }

@@ -2,7 +2,6 @@ package com.github.tsvvct.restaurantvoting.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.github.tsvvct.restaurantvoting.HasIdAndRestaurant;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +18,7 @@ import java.time.LocalDate;
 @Setter
 @JsonPropertyOrder({"id", "user", "restaurant", ""})
 @NoArgsConstructor
-public class UserVote extends BaseEntity implements HasIdAndRestaurant {
+public class UserVote extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)

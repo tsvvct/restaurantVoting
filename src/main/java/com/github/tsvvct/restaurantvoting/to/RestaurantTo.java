@@ -1,7 +1,9 @@
 package com.github.tsvvct.restaurantvoting.to;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -15,26 +17,5 @@ public class RestaurantTo extends NamedTo {
 
     public RestaurantTo() {
         super(null, null);
-        this.menuItems = null;
-    }
-
-    public RestaurantTo(String name) {
-        super(null, name);
-        this.menuItems = null;
-    }
-
-    public RestaurantTo(Integer id) {
-        super(id, null);
-        this.menuItems = null;
-    }
-
-    public RestaurantTo(Integer id, String name) {
-        super(id, name);
-        this.menuItems = null;
-    }
-
-    public RestaurantTo(Integer id, String name, List<MenuItemTo> menuItems) {
-        super(id, name);
-        this.menuItems = menuItems;
     }
 }

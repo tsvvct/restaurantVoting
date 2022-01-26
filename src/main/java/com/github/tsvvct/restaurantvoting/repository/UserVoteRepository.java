@@ -31,6 +31,7 @@ public interface UserVoteRepository extends BaseRepository<UserVote> {
     List<UserVote> getUserVotesFiltered(@Param("user_id") int userId, @Param("voted_from") LocalDate votedFrom,
                                         @Param("voted_to") LocalDate votedTo);
 
-    @Query("FROM UserVote uv WHERE uv.voteDate = :vote_date AND (:restaurant_id IS NULL OR uv.restaurant.id = :restaurant_id)")
+    @Query("FROM UserVote uv WHERE uv.voteDate = :vote_date " +
+            "AND (:restaurant_id IS NULL OR uv.restaurant.id = :restaurant_id)")
     List<UserVote> getAllFiltered(@Param("vote_date") LocalDate voteDate, @Param("restaurant_id") Integer userId);
 }

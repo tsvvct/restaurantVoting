@@ -1,8 +1,6 @@
 package com.github.tsvvct.restaurantvoting.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.tsvvct.restaurantvoting.HasIdAndRestaurant;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -21,7 +19,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MenuItem extends NamedEntity implements HasIdAndRestaurant {
+public class MenuItem extends NamedEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)

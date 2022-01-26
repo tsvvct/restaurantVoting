@@ -2,7 +2,6 @@ package com.github.tsvvct.restaurantvoting.web.uservote;
 
 import com.github.tsvvct.restaurantvoting.repository.UserVoteRepository;
 import com.github.tsvvct.restaurantvoting.service.UserVoteService;
-import com.github.tsvvct.restaurantvoting.to.RestaurantTo;
 import com.github.tsvvct.restaurantvoting.to.UserVoteTo;
 import com.github.tsvvct.restaurantvoting.web.AuthUser;
 import com.github.tsvvct.restaurantvoting.web.validation.RestaurantValidator;
@@ -14,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -80,7 +78,7 @@ public class UserVoteController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<UserVoteTo> createWithLocation(@AuthenticationPrincipal AuthUser authUser,
-                                                         @Valid @RequestBody UserVoteTo voteTo) {
+            @Valid @RequestBody UserVoteTo voteTo) {
         log.info("register vote for user {}", authUser.id());
         UserVoteTo created = service.create(voteTo, authUser.getUser());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -91,7 +89,7 @@ public class UserVoteController {
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public UserVoteTo enable(@AuthenticationPrincipal AuthUser authUser, @PathVariable int id,
-                       @Valid @RequestBody UserVoteTo voteTo) {
+            @Valid @RequestBody UserVoteTo voteTo) {
         int userId = authUser.id();
         log.info("change vote with id={} for user with id={}", id, userId);
         return service.patch(voteTo, id, userId);

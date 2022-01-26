@@ -17,7 +17,8 @@ import java.time.LocalDate;
 @Slf4j
 public class RestaurantValidator implements Validator {
     public static final String EXCEPTION_RESTAURANT_NOTNULL = "restaurant with such id does not exist";
-    public static final String EXCEPTION_RESTAURANT_HAS_NO_MENU = "you can't vote for that restaurant because it doesn't share menu";
+    public static final String EXCEPTION_RESTAURANT_HAS_NO_MENU = "you can't vote for that restaurant" +
+            " because it doesn't share menu";
 
     private final RestaurantRepository repository;
 
@@ -44,7 +45,7 @@ public class RestaurantValidator implements Validator {
         } else {
             repository.findById(value.getRestaurantId()).ifPresentOrElse(dbRest -> log.info("restaurant is present in DB")
                     , () -> {
-                        log.info("rest is NOT present");
+                        log.info("restaurant is NOT present");
                         errors.rejectValue("restaurantId", "", EXCEPTION_RESTAURANT_NOTNULL);
                     });
 

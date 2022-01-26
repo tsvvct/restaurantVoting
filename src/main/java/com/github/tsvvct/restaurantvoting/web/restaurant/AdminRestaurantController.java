@@ -1,6 +1,7 @@
 package com.github.tsvvct.restaurantvoting.web.restaurant;
 
-import com.github.tsvvct.restaurantvoting.model.User;
+import com.github.tsvvct.restaurantvoting.model.Restaurant;
+import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
 import com.github.tsvvct.restaurantvoting.service.RestaurantService;
 import com.github.tsvvct.restaurantvoting.to.RestaurantTo;
 import lombok.extern.slf4j.Slf4j;
@@ -10,19 +11,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import com.github.tsvvct.restaurantvoting.model.Restaurant;
-import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
-import com.github.tsvvct.restaurantvoting.util.RestaurantUtil;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.net.URI;
-
-import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.assureIdConsistent;
-import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.checkNew;
 
 @RestController
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
