@@ -5,6 +5,9 @@ import com.github.tsvvct.restaurantvoting.service.UserVoteService;
 import com.github.tsvvct.restaurantvoting.to.UserVoteTo;
 import com.github.tsvvct.restaurantvoting.web.AuthUser;
 import com.github.tsvvct.restaurantvoting.web.validation.RestaurantValidator;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,6 +30,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = UserVoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@Tag(name = "Managing user votes", description = "CRUD operations on authorized user votes")
 public class UserVoteController {
 
     static final String REST_URL = "/api/profile/votes";
@@ -59,7 +63,13 @@ public class UserVoteController {
     }
 
     @GetMapping("/for-date")
+    @Operation(
+            summary = "Return user vote for date",
+            description = "Returns user vote voted at the specified date," +
+                    " if date is empty, current date is used."
+    )
     public ResponseEntity<UserVoteTo> getForDate(@AuthenticationPrincipal AuthUser authUser,
+            @Parameter(description = "Date to get vote for. If empty current date is used.")
             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDate) {
         LocalDate voteDateForQuery = Objects.requireNonNullElse(voteDate, LocalDate.now());
         log.info("get vote for {} for user {}", voteDateForQuery, authUser.id());
@@ -68,9 +78,13 @@ public class UserVoteController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "Return user votes filtered by date range",
+            description = "Returns user vote voted in range of date from and date to."
+    )
     public List<UserVoteTo> getUserVotes(@AuthenticationPrincipal AuthUser authUser,
-             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateFrom,
-             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateTo) {
+            @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateFrom,
+            @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDateTo) {
         log.info("get votes from {} to {} for user {}", voteDateFrom, voteDateTo, authUser.id());
         return service.getUserVotesToFiltered(authUser.id(), voteDateFrom, voteDateTo);
     }

@@ -4,6 +4,7 @@ import com.github.tsvvct.restaurantvoting.model.Restaurant;
 import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
 import com.github.tsvvct.restaurantvoting.service.RestaurantService;
 import com.github.tsvvct.restaurantvoting.to.RestaurantTo;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
@@ -21,6 +22,7 @@ import java.net.URI;
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @CacheConfig(cacheNames = "restaurants")
+@Tag(name = "Managing restaurants", description = "Create, update or delete operations on restaurants")
 public class AdminRestaurantController {
 
     static final String REST_URL = "/api/admin/restaurants";

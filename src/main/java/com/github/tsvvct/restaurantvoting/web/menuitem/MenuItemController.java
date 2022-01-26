@@ -5,6 +5,8 @@ import com.github.tsvvct.restaurantvoting.service.MenuItemService;
 import com.github.tsvvct.restaurantvoting.to.MenuItemTo;
 import com.github.tsvvct.restaurantvoting.web.validation.RestaurantValidator;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +26,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = MenuItemController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
+@Tag(name = "Managing restaurants menu", description = "CRUD operation on restaurants menu items")
 public class MenuItemController {
 
     static final String REST_URL = "/api/admin/menu-items";
@@ -60,7 +63,10 @@ public class MenuItemController {
             summary = "Return all menu items by specified filter",
             description = "Returns all menu items filtered with the specified date, restaurant."
     )
-    public List<MenuItemTo> getAllFiltered(@RequestParam @Nullable Integer restaurantId,
+    public List<MenuItemTo> getAllFiltered(
+            @Parameter(description = "Restaurants id to get menu items for. If empty items for all restaurants will shown.")
+            @RequestParam @Nullable Integer restaurantId,
+            @Parameter(description = "Date to get menu items for. If empty current date is used.")
             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
         log.info("get menu items for restaurant with id={} for date={}", restaurantId, menuDate);
         return service.getAllFiltered(restaurantId, menuDate);
