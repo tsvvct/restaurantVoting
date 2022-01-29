@@ -23,6 +23,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
+import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.checkNew;
+
 @RestController
 @RequestMapping(value = MenuItemController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
@@ -61,12 +63,12 @@ public class MenuItemController {
     @GetMapping
     @Operation(
             summary = "Return all menu items by specified filter",
-            description = "Returns all menu items filtered with the specified date, restaurant."
+            description = "Return all menu items filtered with the specified: date, restaurant."
     )
     public List<MenuItemTo> getAllFiltered(
-            @Parameter(description = "Restaurants id to get menu items for. If empty items for all restaurants will shown.")
+            @Parameter(description = "Restaurant id to get menu items for, if empty - items for all restaurants will be returned.")
             @RequestParam @Nullable Integer restaurantId,
-            @Parameter(description = "Date to get menu items for. If empty current date is used.")
+            @Parameter(description = "Date to get menu items for, if empty - current date is used.")
             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
         log.info("get menu items for restaurant with id={} for date={}", restaurantId, menuDate);
         return service.getAllFiltered(restaurantId, menuDate);
@@ -75,7 +77,8 @@ public class MenuItemController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<MenuItemTo> createWithLocation(@Valid @RequestBody MenuItemTo menuItemTo) {
-        log.info("create menu item {}", menuItemTo);
+        log.info("create menu item={}", menuItemTo);
+        checkNew(menuItemTo);
         MenuItemTo created = service.create(menuItemTo);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")

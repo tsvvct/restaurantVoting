@@ -41,12 +41,13 @@ public class RestaurantController {
     @GetMapping("/{id}/with-menu")
     @Operation(
             summary = "Return restaurant with menu",
-            description = "Returns restaurant with menu on the specified date," +
+            description = "Return restaurant with menu on the specified date," +
                     " if date is empty, the menu for today will be returned."
     )
-    public ResponseEntity<Restaurant> getWithMenuItems(@PathVariable int id,
-               @Parameter(description = "Date to get menu for. If empty current date is used.")
-               @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
+    public ResponseEntity<Restaurant> getWithMenuItems(
+            @PathVariable int id,
+            @Parameter(description = "Date to get menu for, if empty - current date is used.")
+            @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
         LocalDate menuDateForQuery = Objects.requireNonNullElse(menuDate, LocalDate.now());
         log.info("get restaurant with menu items for date={} for id={}",
                 menuDateForQuery, id);
@@ -64,11 +65,11 @@ public class RestaurantController {
     @Cacheable
     @Operation(
             summary = "Return all restaurants with menu",
-            description = "Returns all restaurants with menu on the specified date, if date is empty," +
+            description = "Return all restaurants with menu on the specified date, if date is empty," +
                     " the menu for today will be returned."
     )
     public List<Restaurant> getAllWithMenu(
-            @Parameter(description = "Date to get menu for. If empty current date is used.")
+            @Parameter(description = "Date to get menu for, if empty - current date is used.")
             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate menuDate) {
         log.info("get all restaurants with menu items for date={}", Objects.requireNonNullElse(menuDate, LocalDate.now()));
         return repository.findAllWithMenuForDate(Objects.requireNonNullElse(menuDate, LocalDate.now()));

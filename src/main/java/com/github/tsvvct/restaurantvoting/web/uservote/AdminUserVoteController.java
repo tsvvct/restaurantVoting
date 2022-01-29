@@ -22,7 +22,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping(value = AdminUserVoteController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-@Tag(name = "Getting votes of all users", description = "Obtain information about all voted votes")
+@Tag(name = "Getting votes of all users", description = "Obtain information about all votes for specified date")
 public class AdminUserVoteController {
     static final String REST_URL = "/api/admin/votes";
 
@@ -35,9 +35,9 @@ public class AdminUserVoteController {
             description = "Returns all users votes filtered by restaurant id, vote date."
     )
     public List<UserVoteTo> get(
-            @Parameter(description = "Restaurant id to get votes for. If empty votes for all restaurants will be returned.")
+            @Parameter(description = "Restaurant id to get votes for, if empty - votes for all restaurants will be returned.")
             @RequestParam @Nullable Integer restaurantId,
-            @Parameter(description = "Date to get votes for. If empty current date is used.")
+            @Parameter(description = "Date to get votes for, if empty - current date is used.")
             @RequestParam @Nullable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate voteDate) {
         LocalDate voteDateForQuery = Objects.requireNonNullElse(voteDate, LocalDate.now());
         log.info("get all votes for date {}", voteDateForQuery);

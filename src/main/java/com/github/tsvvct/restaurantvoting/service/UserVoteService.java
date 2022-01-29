@@ -15,7 +15,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.*;
+import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.checkNotFoundWithId;
+import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.checkVotingIsOver;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,6 @@ public class UserVoteService {
 
     @Transactional
     public UserVoteTo create(UserVoteTo userVoteTo, User user) {
-        checkNew(userVoteTo);
         userVoteTo.setVoteDate(LocalDate.now());
         UserVote userVote = UserVoteUtil.createVoteFromTo(userVoteTo, user, getRestaurantById(userVoteTo.getRestaurantId()));
         return UserVoteUtil.createToFromVote(repository.save(userVote));

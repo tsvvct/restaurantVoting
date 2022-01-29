@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.checkNew;
 import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.checkNotFoundWithId;
 
 @Service
@@ -38,7 +37,6 @@ public class MenuItemService {
     @Transactional
     @CacheEvict(allEntries = true)
     public MenuItemTo create(MenuItemTo menuItemTo) {
-        checkNew(menuItemTo);
         return MenuItemUtil.createToFromItem(repository.save(
                 MenuItemUtil.createItemFromTo(menuItemTo, restaurantRepository.getById(menuItemTo.getRestaurantId()))));
     }

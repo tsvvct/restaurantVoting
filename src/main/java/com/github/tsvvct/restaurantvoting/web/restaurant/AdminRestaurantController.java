@@ -4,6 +4,7 @@ import com.github.tsvvct.restaurantvoting.model.Restaurant;
 import com.github.tsvvct.restaurantvoting.repository.RestaurantRepository;
 import com.github.tsvvct.restaurantvoting.service.RestaurantService;
 import com.github.tsvvct.restaurantvoting.to.RestaurantTo;
+import com.github.tsvvct.restaurantvoting.util.RestaurantUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+
+import static com.github.tsvvct.restaurantvoting.util.validation.ValidationUtil.checkNew;
 
 @RestController
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +49,8 @@ public class AdminRestaurantController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Restaurant> createWithLocation(@Valid @RequestBody RestaurantTo restaurantTo) {
         log.info("create restaurant with id={}", restaurantTo);
-        Restaurant created = service.create(restaurantTo);
+        checkNew(restaurantTo);
+        Restaurant created = repository.save(RestaurantUtil.createNewFromTo(restaurantTo));
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
                 .buildAndExpand(created.getId()).toUri();
