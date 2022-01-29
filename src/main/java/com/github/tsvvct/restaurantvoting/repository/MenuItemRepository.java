@@ -15,7 +15,7 @@ public interface MenuItemRepository extends BaseRepository<MenuItem> {
     MenuItem get(@Param("id") int id, @Param("restaurant_id") int restaurantId);
 
     @Query("SELECT m from MenuItem m WHERE (:restaurantId is null or m.restaurant.id=:restaurantId) " +
-            "AND (:menuDate is null or m.menuDate = :menuDate)")
+            "AND (:menuDate is null or m.menuDate = :menuDate) ORDER BY m.menuDate, m.id")
     List<MenuItem> findAllByRestaurantId(@Param("restaurantId") Integer restaurantId,
                                          @Param("menuDate") LocalDate menuDate);
 

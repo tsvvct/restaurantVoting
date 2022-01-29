@@ -16,12 +16,14 @@ public interface RestaurantRepository extends BaseRepository<Restaurant>, JpaSpe
 
     @EntityGraph(attributePaths = {"menuItems"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("SELECT r FROM Restaurant r LEFT JOIN r.menuItems rm " +
-            "ON (r.id = :restaurant_id and rm.menuDate = :menu_date) WHERE r.id = :restaurant_id")
+            "ON (r.id = :restaurant_id and rm.menuDate = :menu_date) WHERE r.id = :restaurant_id " +
+            "ORDER BY r.id, rm.menuDate, rm.id")
     Optional<Restaurant> findByIdWithMenuForDateOptional(@Param("restaurant_id") int id,
                                                          @Param("menu_date") LocalDate menuDate);
 
     @EntityGraph(attributePaths = {"menuItems"}, type = EntityGraph.EntityGraphType.LOAD)
     @Query("FROM Restaurant r LEFT JOIN r.menuItems rm " +
-            "ON r = rm.restaurant and rm.menuDate = :menu_date")
+            "ON r = rm.restaurant and rm.menuDate = :menu_date " +
+            "ORDER BY r.id, rm.menuDate, rm.id")
     List<Restaurant> findAllWithMenuForDate(@Param("menu_date") LocalDate menuDate);
 }
